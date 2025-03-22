@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "924688975520",
+    "project_id": "bookvoyager-be2cc",
+    "storage_bucket": "bookvoyager-be2cc.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:924688975520:android:646416f189fc4b286c6bc5",
+        "android_client_info": {
+          "package_name": "com.example.bookvoyager"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6GTOfpJprMOsuXwVX5YQ-F_X0LFzL7t8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
