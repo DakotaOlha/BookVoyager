@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/Background"
+    tools:context=".RegistrationActivity" >
+
+    <ImageView
+        android:id="@+id/backRegPhoto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/back_photo_reg"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/mainRegistrationText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:fontFamily="@font/intersemibold"
+        android:text="Sign up!"
+        android:textColor="@color/LightBlue"
+        android:textSize="48dp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/mainRegistrationText">
+
+        <TextView
+            android:id="@+id/textNick"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:fontFamily="@font/interregular"
+            android:text="Enter your nick:"
+            android:textColor="@color/LightBlue"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <EditText
+            android:id="@+id/enterNick"
+            android:layout_width="320dp"
+            android:layout_height="56dp"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/bg"
+            android:hint="enter nick name"
+            android:inputType="textEmailAddress"
+            android:paddingLeft="14dp"
+            android:textColor="@color/BlackBrown"
+            android:textColorHint="@color/hint"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/textEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:fontFamily="@font/interregular"
+            android:text="Enter your email:"
+            android:textColor="@color/LightBlue"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <EditText
+            android:id="@+id/enterEmail"
+            android:layout_width="320dp"
+            android:layout_height="56dp"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/bg"
+            android:hint="enter email"
+            android:inputType="textEmailAddress"
+            android:paddingLeft="14dp"
+            android:textColor="@color/BlackBrown"
+            android:textColorHint="@color/hint"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/textPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:fontFamily="@font/interregular"
+            android:text="Enter your password:"
+            android:textColor="@color/LightBlue"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <EditText
+            android:id="@+id/enterPassword"
+            android:layout_width="320dp"
+            android:layout_height="56dp"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/bg"
+            android:hint="enter password"
+            android:inputType="textPassword"
+            android:paddingLeft="14dp"
+            android:textColor="@color/BlackBrown"
+            android:textColorHint="@color/hint"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/textBirth"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:fontFamily="@font/interregular"
+            android:text="Enter your birth:"
+            android:textColor="@color/LightBlue"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/enterDay"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_marginTop="15dp"
+                android:layout_weight="1"
+                android:background="@drawable/bdbirth"
+                android:hint="17"
+                android:inputType="number"
+                android:paddingLeft="14dp"
+                android:textColor="@color/BlackBrown"
+                android:textColorHint="@color/hint"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <EditText
+                android:id="@+id/enterMonth"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="15dp"
+                android:layout_weight="1"
+                android:background="@drawable/bdbirth"
+                android:hint="12"
+                android:inputType="number"
+                android:paddingLeft="14dp"
+                android:textColor="@color/BlackBrown"
+                android:textColorHint="@color/hint"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <EditText
+                android:id="@+id/enterYear"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="15dp"
+                android:layout_weight="2"
+                android:background="@drawable/bdbirth"
+                android:hint="2006"
+                android:inputType="number"
+                android:paddingLeft="14dp"
+                android:textColor="@color/BlackBrown"
+                android:textColorHint="@color/hint"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/registration"
+        android:layout_width="320dp"
+        android:layout_height="68dp"
+        android:background="@drawable/round_btn"
+        android:fontFamily="@font/intersemibold"
+        android:text="Registration"
+        android:textAllCaps="false"
+        android:textColor="@color/Background"
+        android:textSize="36dp"
+        app:backgroundTint="@null"
+        app:layout_constraintBottom_toBottomOf="@+id/backRegPhoto"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.505"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        app:layout_constraintVertical_bias="0.534" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
