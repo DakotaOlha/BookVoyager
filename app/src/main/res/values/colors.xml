@@ -8,4 +8,5 @@
     <color name="LightBrown">#C89768</color>
     <color name="BlackBrown">#584434</color>
     <color name="hint">#896950</color>
+    <color name="tranc">#00000000</color>
 </resources>
