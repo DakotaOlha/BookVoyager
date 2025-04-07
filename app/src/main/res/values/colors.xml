@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="white">#E3D3B9</color>
     <color name="BlackBlue">#0F1931</color>
     <color name="LightBlue">#2D4159</color>
     <color name="Background">#E3D3B9</color>
     <color name="LightBrown">#C89768</color>
     <color name="BlackBrown">#584434</color>
     <color name="hint">#896950</color>
-    <color name="tranc">#00000000</color>
 </resources>

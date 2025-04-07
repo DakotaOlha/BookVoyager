@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/Background"
+    tools:context=".MyBooksFragment">
+
+    <EditText
+        android:id="@+id/findBook"
+        android:layout_width="300dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="21dp"
+        android:background="@drawable/find"
+        android:inputType="text"
+        android:paddingStart="14dp"
+        android:paddingEnd="44dp"
+        android:textColor="@color/BlackBrown"
+        android:textColorHint="@color/hint" />
+
+</FrameLayout>

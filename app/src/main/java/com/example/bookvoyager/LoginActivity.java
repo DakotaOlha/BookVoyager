@@ -43,7 +43,7 @@ public class LoginActivity extends AppCompatActivity {
         boolean isLoggedIn = preferences.getBoolean("isLoggedIn", false);
 
         if (isLoggedIn) {
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);
             startActivity(intent);
             finish();
             }
