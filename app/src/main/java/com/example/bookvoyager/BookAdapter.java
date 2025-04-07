@@ -19,6 +19,11 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
         this.books = books;
     }
 
+    public void FilterList(List<Book> filteredList){
+        books = filteredList;
+        notifyDataSetChanged();
+    }
+
     public static class BookViewHolder extends RecyclerView.ViewHolder {
         ImageView bookCover;
         TextView bookTitle, bookAuthor;

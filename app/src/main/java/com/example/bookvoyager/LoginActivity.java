@@ -1,6 +1,7 @@
 package com.example.bookvoyager;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
@@ -38,66 +39,69 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         fullScreen();
 
-        auth = FirebaseAuth.getInstance();
-        signupEmail = findViewById(R.id.enterEmail);
-        signupPassword = findViewById(R.id.enterPassword);
+        SharedPreferences preferences = getSharedPreferences("userPrefs", MODE_PRIVATE);
+        boolean isLoggedIn = preferences.getBoolean("isLoggedIn", false);
 
-//        if(auth.getCurrentUser() != null){
-//            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-//            startActivity(intent);
-//            finish();
-//        }
-
-
-        TextView registrationLink = findViewById(R.id.registrationTransitionLink);
-        registrationLink.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(LoginActivity.this, RegistrationActivity.class);
-                startActivity(intent);
+        if (isLoggedIn) {
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            startActivity(intent);
+            finish();
             }
-        });
+        else{
+            auth = FirebaseAuth.getInstance();
+            signupEmail = findViewById(R.id.enterEmail);
+            signupPassword = findViewById(R.id.enterPassword);
 
-        Button loginButton = findViewById(R.id.loginButton);
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String user = signupEmail.getText().toString().trim();
-                String pass = signupPassword.getText().toString().trim();
 
-                if(user.isEmpty()){
-                    signupEmail.setError("is empty");
+            TextView registrationLink = findViewById(R.id.registrationTransitionLink);
+            registrationLink.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(LoginActivity.this, RegistrationActivity.class);
+                    startActivity(intent);
                 }
-                else if(pass.isEmpty()){
-                    signupPassword.setError("is empty");
-                }
-                else {
-                    auth.createUserWithEmailAndPassword(user, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if(task.isSuccessful()){
-                                Toast.makeText(LoginActivity.this, "is Successful", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                startActivity(intent);
+            });
+
+            Button loginButton = findViewById(R.id.loginButton);
+            loginButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String user = signupEmail.getText().toString().trim();
+                    String pass = signupPassword.getText().toString().trim();
+
+                    if (user.isEmpty()) {
+                        signupEmail.setError("is empty");
+                    } else if (pass.isEmpty()) {
+                        signupPassword.setError("is empty");
+                    } else {
+                        auth.signInWithEmailAndPassword(user, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                if (task.isSuccessful()) {
+                                    SharedPreferences preferences = getSharedPreferences("userPrefs", MODE_PRIVATE);
+                                    SharedPreferences.Editor editor = preferences.edit();
+                                    editor.putBoolean("isLoggedIn", true);
+                                    editor.putString("email", user);
+                                    editor.apply();
+
+                                    Toast.makeText(LoginActivity.this, "is Successful", Toast.LENGTH_SHORT).show();
+                                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                    startActivity(intent);
+                                } else {
+                                    Toast.makeText(LoginActivity.this, "isn't Successful", Toast.LENGTH_SHORT).show();
+                                }
                             }
-                            else {
-                                Toast.makeText(LoginActivity.this, "isn't Successful", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
+                        });
 
+                    }
                 }
-            }
-        });
-
-
+            });
+        }
     }
-
     private void fullScreen(){
         Window window = getWindow();
         window.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                 WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         window.setStatusBarColor(Color.TRANSPARENT);
     }
-
 }

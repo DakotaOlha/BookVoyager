@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -33,10 +34,7 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-        Window window = getWindow();
-        window.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-        window.setStatusBarColor(Color.TRANSPARENT);
+        fullScreen();
 
         Button account_button = findViewById(R.id.account_button);
 
@@ -83,6 +81,31 @@ public class MainActivity extends AppCompatActivity {
 
         loadBooks();
 
+        EditText findBookText = findViewById(R.id.findBook);
+        ImageView searchBtn= findViewById(R.id.search_image);
+
+        search_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String query = findBookText.getText().toString().toLowerCase().trim();
+
+                if(query.isEmpty()){
+                    bookAdapter.FilterList(books);
+                    return;
+                }
+
+                List<Book> filteredBooks = new ArrayList<>();
+
+                for(Book bk: books){
+                    if(bk.getTitle().toLowerCase().contains(query) || bk.getAuthor().toLowerCase().contains(query)){
+                        filteredBooks.add(bk);
+                    }
+                }
+
+                bookAdapter.FilterList(filteredBooks);
+            }
+        });
+
     }
 
 
@@ -91,10 +114,17 @@ public class MainActivity extends AppCompatActivity {
         books.add(new Book("Книга 2", "Автор 2", R.drawable.agata));
         books.add(new Book("Книга 3", "Автор 3", R.drawable.agata));
         books.add(new Book("Книга 4", "Автор 4", R.drawable.agata));
-        books.add(new Book("Книга 1", "Автор 1", R.drawable.agata));
+        books.add(new Book("Книга 1", "Автор 3", R.drawable.agata));
         books.add(new Book("Книга 2", "Автор 2", R.drawable.agata));
-        books.add(new Book("Книга 3", "Автор 3", R.drawable.agata));
+        books.add(new Book("Книга 3", "Автор 1", R.drawable.agata));
         books.add(new Book("Книга 4", "Автор 4", R.drawable.agata));
         bookAdapter.notifyDataSetChanged();
+    }
+
+    private void fullScreen(){
+        Window window = getWindow();
+        window.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        window.setStatusBarColor(Color.TRANSPARENT);
     }
 }
