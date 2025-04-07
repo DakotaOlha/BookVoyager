@@ -3,8 +3,14 @@ package com.example.bookvoyager;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.TypedValue;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -57,9 +63,28 @@ public class MainMenuActivity extends AppCompatActivity {
             Toast.makeText(MainMenuActivity.this, "is Successful", Toast.LENGTH_SHORT).show();
         });
 
-//        BottomNavigationView navView = findViewById(R.id.bottomNavigationView);
-//        Menu menu =
+        BottomNavigationView navView = findViewById(R.id.bottomNavigationView);
+        Menu menu =  navView.getMenu();
+        setupIconSize(menu.findItem(R.id.ViewBooks), R.drawable.my_book_icon, 40, 40);
+        setupIconSize(menu.findItem(R.id.ViewAnalytics), R.drawable.analytics_icon, 40, 29);
+        setupIconSize(menu.findItem(R.id.ViewMaps), R.drawable.map_iocn, 42, 34);
+        setupIconSize(menu.findItem(R.id.ViewReward), R.drawable.awards_icon, 36, 36);
 
+    }
+
+    private void setupIconSize(MenuItem item, int iconRes, int widthDp, int heightDp) {
+
+        int widthPx = (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, widthDp, getResources().getDisplayMetrics());
+        int heightPx = (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, heightDp, getResources().getDisplayMetrics());
+
+        ImageView iconView = (ImageView) LayoutInflater.from(this)
+                .inflate(R.layout.nav_icon, null);
+        iconView.setImageResource(iconRes);
+        iconView.setLayoutParams(new ViewGroup.LayoutParams(widthPx, heightPx));
+
+        item.setActionView(iconView);
     }
 
     private void replaceFragment(Fragment fragment){
