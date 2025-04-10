@@ -31,6 +31,7 @@ public class RegistrationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
+
         fullScreen();
 
         auth = FirebaseAuth.getInstance();
@@ -62,7 +63,7 @@ public class RegistrationActivity extends AppCompatActivity {
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if(task.isSuccessful()){
                                 Toast.makeText(RegistrationActivity.this, "is Successful", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(RegistrationActivity.this, MainActivity.class);
+                                Intent intent = new Intent(RegistrationActivity.this, MainMenuActivity.class);
                                 startActivity(intent);
                             }
                             else {

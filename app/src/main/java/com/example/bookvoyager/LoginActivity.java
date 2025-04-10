@@ -85,7 +85,7 @@ public class LoginActivity extends AppCompatActivity {
                                     editor.apply();
 
                                     Toast.makeText(LoginActivity.this, "is Successful", Toast.LENGTH_SHORT).show();
-                                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                    Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);
                                     startActivity(intent);
                                 } else {
                                     Toast.makeText(LoginActivity.this, "isn't Successful", Toast.LENGTH_SHORT).show();
@@ -98,6 +98,7 @@ public class LoginActivity extends AppCompatActivity {
             });
         }
     }
+
     private void fullScreen(){
         Window window = getWindow();
         window.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,

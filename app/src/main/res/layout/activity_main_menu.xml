@@ -7,7 +7,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/Background"
-    android:fitsSystemWindows="false"
+    android:fitsSystemWindows="true"
+    android:clipToPadding="false"
     tools:context=".MainMenuActivity">
 
     <FrameLayout
@@ -23,7 +24,8 @@
         android:background="@color/Background"
         app:fabCradleMargin="10dp"
         app:fabCradleRoundedCornerRadius="10dp"
-        app:fabAlignmentMode="center">
+        app:fabAlignmentMode="center"
+        >
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:layout_width="match_parent"
@@ -36,7 +38,7 @@
             app:itemBackground="@android:color/transparent"
             app:itemIconSize="42dp"
             android:paddingTop="4dp"
-            android:paddingBottom="4dp"/>
+            android:paddingBottom="0dp"/>
 
 
     </com.google.android.material.bottomappbar.BottomAppBar>

@@ -23,7 +23,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.example.bookvoyager.databinding.ActivityMainBinding;
 import com.example.bookvoyager.databinding.ActivityMainMenuBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -34,10 +33,9 @@ public class MainMenuActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        fullScreen();
+
         super.onCreate(savedInstanceState);
         binding = ActivityMainMenuBinding.inflate(getLayoutInflater());
-//        binding = ActivityMainBinding.inflate(getLayoutInflater());
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
 
         setContentView(binding.getRoot());
@@ -94,17 +92,17 @@ public class MainMenuActivity extends AppCompatActivity {
         fragmentTransaction.commit();
     }
 
-    private void fullScreen(){
-        Window window = getWindow();
-        WindowCompat.setDecorFitsSystemWindows(window, false);
-        window.setStatusBarColor(Color.TRANSPARENT);
-
-        // Для API 30+ додатково встановлюємо поведінку для системних барів
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            window.setDecorFitsSystemWindows(false);
-        } else {
-            window.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-        }
-    }
+//    private void fullScreen(){
+//        Window window = getWindow();
+//        WindowCompat.setDecorFitsSystemWindows(window, false);
+//        window.setStatusBarColor(Color.TRANSPARENT);
+//
+//        // Для API 30+ додатково встановлюємо поведінку для системних барів
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+//            window.setDecorFitsSystemWindows(false);
+//        } else {
+//            window.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+//                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+//        }
+//    }
 }
