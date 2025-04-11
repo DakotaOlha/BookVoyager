@@ -52,6 +52,9 @@ public class MainMenuActivity extends AppCompatActivity {
             else if(id == R.id.ViewReward){
                 replaceFragment(new RewardsFragment());
             }
+            else if(id == R.id.ViewMaps){
+                replaceFragment(new MapFragment());
+            }
 
             return true;
         });
@@ -97,7 +100,7 @@ public class MainMenuActivity extends AppCompatActivity {
 //        WindowCompat.setDecorFitsSystemWindows(window, false);
 //        window.setStatusBarColor(Color.TRANSPARENT);
 //
-//        // Для API 30+ додатково встановлюємо поведінку для системних барів
+//
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
 //            window.setDecorFitsSystemWindows(false);
 //        } else {

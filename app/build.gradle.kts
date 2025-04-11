@@ -47,6 +47,9 @@ dependencies {
     implementation(libs.credentials)
     implementation(libs.credentials.play.services.auth)
     implementation(libs.googleid)
+
+    implementation("com.caverock:androidsvg:1.4")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
 
