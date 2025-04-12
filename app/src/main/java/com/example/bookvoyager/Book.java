@@ -5,10 +5,13 @@ public class Book {
     private String author;
     private int coverResId;
 
-    public Book(String title, String author, int coverResId) {
+    private String progressReading;
+
+    public Book(String title, String author, int coverResId, String isRead) {
         this.title = title;
         this.author = author;
         this.coverResId = coverResId;
+        this.progressReading = isRead;
     }
 
     public String getTitle() {
@@ -21,5 +24,9 @@ public class Book {
 
     public int getCoverResId() {
         return coverResId;
+    }
+
+    public String getProgressReading(){
+        return progressReading;
     }
 }
