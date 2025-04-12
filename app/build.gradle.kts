@@ -49,6 +49,8 @@ dependencies {
     implementation(libs.googleid)
 
     implementation("com.caverock:androidsvg:1.4")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.squareup.picasso:picasso:2.71828")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)

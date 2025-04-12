@@ -1,9 +1,13 @@
 package com.example.bookvoyager;
 
 public class Book {
+    private int ISBN;
     private String title;
     private String author;
+    private int yearIssue;
     private int coverResId;
+    private String publisher;
+    private String description;
 
     private String progressReading;
 

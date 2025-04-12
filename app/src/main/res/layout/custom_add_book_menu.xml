@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/popup_layout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/popup_background"
+    android:padding="12dp"
+    android:elevation="8dp">
+
+    <TextView
+        android:id="@+id/add_by_isbn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add by ISBN"
+        android:textColor="@color/Background"
+        android:textAppearance="?attr/textAppearanceListItem"
+        android:padding="8dp" />
+
+    <TextView
+        android:id="@+id/add_manually"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add manually"
+        android:textColor="@color/Background"
+        android:textAppearance="?attr/textAppearanceListItem"
+        android:padding="8dp" />
+
+    <TextView
+        android:id="@+id/add_by_photo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add by photo"
+        android:textColor="@color/Background"
+        android:textAppearance="?attr/textAppearanceListItem"
+        android:padding="8dp" />
+</LinearLayout>

@@ -88,9 +88,6 @@ public class MyBooksFragment extends Fragment {
             bookAdapter.FilterList(filteredBooks);
         });
 
-        //setupKeyboardListener(view);
-
-
 
         return view;
     }

@@ -83,8 +83,6 @@ public class LoginActivity extends AppCompatActivity {
                                     editor.putBoolean("isLoggedIn", true);
                                     editor.putString("email", user);
                                     editor.apply();
-
-                                    Toast.makeText(LoginActivity.this, "is Successful", Toast.LENGTH_SHORT).show();
                                     Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);
                                     startActivity(intent);
                                 } else {

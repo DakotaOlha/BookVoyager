@@ -7,10 +7,13 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
+import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -37,7 +40,6 @@ public class MainMenuActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityMainMenuBinding.inflate(getLayoutInflater());
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
-
         setContentView(binding.getRoot());
 
         replaceFragment(new MyBooksFragment());
@@ -61,7 +63,7 @@ public class MainMenuActivity extends AppCompatActivity {
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(view -> {
-            Toast.makeText(MainMenuActivity.this, "is Successful", Toast.LENGTH_SHORT).show();
+            showAddBookMenu(view);
         });
 
         BottomNavigationView navView = findViewById(R.id.bottomNavigationView);
@@ -72,6 +74,48 @@ public class MainMenuActivity extends AppCompatActivity {
         setupIconSize(menu.findItem(R.id.ViewReward), R.drawable.awards_icon, 36, 36);
 
     }
+
+    private void showAddBookMenu(View anchor){
+
+        View popupView = LayoutInflater.from(this).inflate(R.layout.custom_add_book_menu, null);
+
+        PopupWindow popupWindow = new PopupWindow(popupView,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                true);
+
+        popupWindow.setAnimationStyle(R.style.PopupSlideUpAnimation);
+
+        popupView.findViewById(R.id.add_by_isbn).setOnClickListener(v -> {
+            Toast.makeText(this, "Add by ISBN selected", Toast.LENGTH_SHORT).show();
+            popupWindow.dismiss();
+        });
+        popupView.findViewById(R.id.add_manually).setOnClickListener(v -> {
+            Toast.makeText(this, "Add manually selected", Toast.LENGTH_SHORT).show();
+            popupWindow.dismiss();
+        });
+        popupView.findViewById(R.id.add_by_photo).setOnClickListener(v -> {
+            Toast.makeText(this, "Add by photo selected", Toast.LENGTH_SHORT).show();
+            popupWindow.dismiss();
+        });
+
+        popupView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+        int popupWidth = popupView.getMeasuredWidth();
+        int popupHeight = popupView.getMeasuredHeight();
+
+        int[] location = new int[2];
+        anchor.getLocationOnScreen(location);
+        int anchorX = location[0];
+        int anchorY = location[1];
+
+        int screenWidth = getResources().getDisplayMetrics().widthPixels;
+
+        int xOffset = (screenWidth - popupWidth) / 2;
+        int yOffset = anchorY - popupHeight;
+
+        popupWindow.setElevation(10);
+        popupWindow.showAtLocation(anchor, 0, xOffset, yOffset);
+       }
 
     private void setupIconSize(MenuItem item, int iconRes, int widthDp, int heightDp) {
 
