@@ -84,11 +84,10 @@ public class RegistrationActivity extends AppCompatActivity {
                                 FirebaseUser currentUser = auth.getCurrentUser();
                                 if(currentUser != null) {
                                     Map<String, Object> userData = new HashMap<>();
+                                    String birth = day + "-" + month + "-" + year;
                                     userData.put("nickname", nick);
                                     userData.put("email", user);
-                                    userData.put("password", pass);
-                                    userData.put("birthDay", day);
-                                    userData.put("birthYear", year);
+                                    userData.put("birth", birth);
                                     userData.put("uid", currentUser.getUid());
 
 
@@ -104,7 +103,7 @@ public class RegistrationActivity extends AppCompatActivity {
                                                         startActivity(intent);
                                                     }
                                                     else{
-                                                        
+
                                                         Toast.makeText(RegistrationActivity.this, "Помилка збереження даних", Toast.LENGTH_SHORT).show();
                                                     }
                                                 }
