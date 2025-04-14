@@ -34,7 +34,7 @@ public class SearchFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private EditText searchEditText;
-    private BookAdapter bookAdapter;
+    private SearchBookAdapter bookAdapter;
 
     private final List<Book> books = new ArrayList<>();
 
@@ -57,8 +57,8 @@ public class SearchFragment extends Fragment {
     }
 
     private void setupRecyclerView() {
-        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
-        bookAdapter = new BookAdapter(books);
+        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 1));
+        bookAdapter = new SearchBookAdapter(books);
         recyclerView.setAdapter(bookAdapter);
     }
 
