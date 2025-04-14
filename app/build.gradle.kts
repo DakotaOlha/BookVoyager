@@ -51,6 +51,7 @@ dependencies {
     implementation("com.caverock:androidsvg:1.4")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.squareup.picasso:picasso:2.71828")
+    implementation("com.google.android.gms:play-services-basement:18.2.0")
     implementation(libs.firebase.firestore)
 
     testImplementation(libs.junit)

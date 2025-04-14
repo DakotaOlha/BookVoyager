@@ -1,22 +1,14 @@
 
 package com.example.bookvoyager;
 
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.Rect;
 import android.os.Bundle;
-import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -25,9 +17,11 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,16 +30,15 @@ import java.util.List;
 public class MyBooksFragment extends Fragment {
 
     private RecyclerView recyclerView;
-    private BookAdapter bookAdapter;
-    private List<Book> books;
     private EditText findBookText;
-    private boolean wasFocused = false;
+    private Button ifReadButton;
 
+    private BookAdapter bookAdapter;
+    private final List<Book> books = new ArrayList<>();
     private FirebaseFirestore db;
     private FirebaseAuth auth;
     private String currentUserId;
 
-    private Button ifRead;
 
     @Nullable
     @Override
@@ -53,77 +46,96 @@ public class MyBooksFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_my_books, container, false);
 
-        Button account_button = view.findViewById(R.id.account_button);
-        account_button.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), AccountActivity.class);
-            startActivity(intent);
-        });
+        initializeFirebase();
+        initializeViews(view);
+        setupRecyclerView(view);
+        setupEventListeners(view);
 
-        ImageView search_btn = view.findViewById(R.id.search_image);
-        Button sortingButton = view.findViewById(R.id.sortingButton);
-        sortingButton.setOnClickListener(v -> showSortingMenu(v));
-
-        ifRead = view.findViewById(R.id.ifRead);
-        ifRead.setOnClickListener(v -> ifReadButtonClick(v));
-
-
-        recyclerView = view.findViewById(R.id.bookRecyclerView);
-        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
-
-        books = new ArrayList<>();
-        bookAdapter = new BookAdapter(books);
-        recyclerView.setAdapter(bookAdapter);
-
-        findBookText = view.findViewById(R.id.findBook);
-        search_btn.setOnClickListener(v -> {
-            String query = findBookText.getText().toString().toLowerCase().trim();
-
-            if(query.isEmpty()){
-                bookAdapter.FilterList(books);
-                return;
-            }
-
-            List<Book> filteredBooks = new ArrayList<>();
-
-            for(Book bk: books){
-                if(bk.getTitle().toLowerCase().contains(query) || bk.getAuthor().toLowerCase().contains(query)){
-                    filteredBooks.add(bk);
-                }
-            }
-
-            bookAdapter.FilterList(filteredBooks);
-        });
-
-        db = FirebaseFirestore.getInstance();
-        auth = FirebaseAuth.getInstance();
-        currentUserId = auth.getCurrentUser().getUid();
-
-        getUserData();
+        loadUserBooks();
 
         return view;
     }
+    private void initializeFirebase() {
+        db = FirebaseFirestore.getInstance();
+        auth = FirebaseAuth.getInstance();
+        currentUserId = auth.getCurrentUser().getUid();
+    }
 
-    public void ifReadButtonClick(View view){
-        if(ifRead.getText().equals("Is read")){
-            ifRead.setText("In process");
-            filterByProcess("In process");
+    private void initializeViews(View view) {
+        findBookText = view.findViewById(R.id.findBook);
+        ifReadButton = view.findViewById(R.id.ifRead);
+
+        Button account_button = view.findViewById(R.id.account_button);
+        account_button.setOnClickListener(v -> navigateToAccountActivity());
+    }
+
+    private void navigateToAccountActivity(){
+        Intent intent = new Intent(getActivity(), AccountActivity.class);
+        startActivity(intent);
+    }
+
+    private void setupRecyclerView(View view) {
+        recyclerView = view.findViewById(R.id.bookRecyclerView);
+        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
+        bookAdapter = new BookAdapter(books);
+        recyclerView.setAdapter(bookAdapter);
+    }
+
+    private void setupEventListeners(View view) {
+        ImageView search_btn = view.findViewById(R.id.search_image);
+        search_btn.setOnClickListener(v -> filterBooksBySearchQuery());
+
+        Button sortingButton = view.findViewById(R.id.sortingButton);
+        sortingButton.setOnClickListener(v -> showSortingMenu(v));
+
+        ifReadButton.setOnClickListener(v ->  toggleReadingFilter(v));
+    }
+
+    private void filterBooksBySearchQuery(){
+        String query = findBookText.getText().toString().toLowerCase().trim();
+
+        if(query.isEmpty()){
+            bookAdapter.FilterList(books);
+            return;
         }
-        else if(ifRead.getText().equals("In process")){
-            ifRead.setText("Not read");
-            filterByProcess("Not read");
+
+        List<Book> filteredBooks = new ArrayList<>();
+
+        for(Book bk: books){
+            if(bk.getTitle().toLowerCase().contains(query) || bk.getAuthor().toLowerCase().contains(query)){
+                filteredBooks.add(bk);
+            }
         }
-        else if(ifRead.getText().equals("Not read")){
-            ifRead.setText("Read?");
-            filterByProcess("Read?");
+
+        bookAdapter.FilterList(filteredBooks);
+    }
+
+    public void toggleReadingFilter(View view){
+        String currentFilter = ifReadButton.getText().toString();
+        String newFilter;
+
+        switch (currentFilter) {
+            case "Is read":
+                newFilter = "In process";
+                break;
+            case "In process":
+                newFilter = "Not read";
+                break;
+            case "Not read":
+                newFilter = "Read?";
+                break;
+            case "Read?":
+                newFilter = "Is read";
+                break;
+            default:
+                newFilter = "Is read";
         }
-        else if(ifRead.getText().equals("Read?")){
-            ifRead.setText("Is read");
-            filterByProcess("Is read");
-        }
+
+        ifReadButton.setText(newFilter);
+        filterBooksByReadingStatus(newFilter);
     }
 
     public void showSortingMenu(View view) {
-
         SortDialogFragment dialog = new SortDialogFragment(new SortDialogFragment.OnSortOptionSelected() {
             @Override
             public void onSortByTitle() {
@@ -135,9 +147,7 @@ public class MyBooksFragment extends Fragment {
                 sortBooksByAuthor();
             }
         });
-
         dialog.show(getChildFragmentManager(), "SortDialog");
-
     }
 
     private void sortBooksByTitle(){
@@ -150,7 +160,7 @@ public class MyBooksFragment extends Fragment {
         bookAdapter.notifyDataSetChanged();
     }
 
-    private void filterByProcess(String filter){
+    private void filterBooksByReadingStatus(String filter){
         if(filter.equals("Read?")){
             bookAdapter.FilterList(books);
             return;
@@ -164,39 +174,37 @@ public class MyBooksFragment extends Fragment {
         bookAdapter.FilterList(filteredBooks);
     }
 
-    private void getUserData() {
+    private void loadUserBooks(){
         db.collection("users")
                 .document(currentUserId)
                 .collection("books")
                 .get()
                 .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        books.clear();
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            String title = document.getString("title");
-                            String author = document.getString("author");
-                            String coverUrl = document.getString("cover_url");
-                            String readingStatus = document.getString("reading_status");
-
-                            books.add(new Book(title, author, coverUrl, readingStatus));
-                        }
-                        bookAdapter.notifyDataSetChanged();
-                    } else {
+                    if(task.isSuccessful()){
+                        processFetchedBooks(task);
+                    }
+                    else {
                         Toast.makeText(getContext(), "Помилка завантаження книг", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
-    private void loadBooks() {
-        books.add(new Book("Книга 1", "Автор 1", "R.drawable.agata", "In process"));
-        books.add(new Book("Книга 2", "Автор 2", "R.drawable.agata", "Is read"));
-        books.add(new Book("Книга 3", "Автор 3", "R.drawable.agata", "In process"));
-        books.add(new Book("Книга 4", "Автор 4", "R.drawable.agata", "Not read"));
-        books.add(new Book("Книга 1", "Автор 3", "R.drawable.agata", "Not read"));
-        books.add(new Book("Книга 2", "Автор 2", "R.drawable.agata", "Not read"));
-        books.add(new Book("Книга 3", "Автор 1", "R.drawable.agata", "Not read"));
-        books.add(new Book("Книга 4", "Автор 4", "R.drawable.agata", "In process"));
+    private void processFetchedBooks(Task<QuerySnapshot> task) {
+        books.clear();
+        for (QueryDocumentSnapshot document : task.getResult()) {
+            Book book = createBookFromDocument(document);
+            books.add(book);
+        }
         bookAdapter.notifyDataSetChanged();
+    }
+
+    private Book createBookFromDocument(QueryDocumentSnapshot document) {
+        return new Book(
+                document.getString("title"),
+                document.getString("author"),
+                document.getString("cover_url"),
+                document.getString("reading_status")
+        );
     }
 
 }
