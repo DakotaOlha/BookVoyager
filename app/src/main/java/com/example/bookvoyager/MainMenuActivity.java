@@ -29,9 +29,10 @@ import androidx.fragment.app.FragmentTransaction;
 import com.example.bookvoyager.databinding.ActivityMainMenuBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class MainMenuActivity extends AppCompatActivity {
-
     ActivityMainMenuBinding binding;
 
     @Override
@@ -75,6 +76,8 @@ public class MainMenuActivity extends AppCompatActivity {
         setupIconSize(menu.findItem(R.id.ViewAnalytics), R.drawable.main_search_icon, 34, 34);
         setupIconSize(menu.findItem(R.id.ViewMaps), R.drawable.map_iocn, 42, 34);
         setupIconSize(menu.findItem(R.id.ViewReward), R.drawable.awards_icon, 36, 36);
+
+
 
     }
 

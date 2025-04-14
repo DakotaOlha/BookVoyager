@@ -25,6 +25,10 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -36,6 +40,10 @@ public class MyBooksFragment extends Fragment {
     private List<Book> books;
     private EditText findBookText;
     private boolean wasFocused = false;
+
+    private FirebaseFirestore db;
+    private FirebaseAuth auth;
+    private String currentUserId;
 
     private Button ifRead;
 
@@ -66,8 +74,6 @@ public class MyBooksFragment extends Fragment {
         bookAdapter = new BookAdapter(books);
         recyclerView.setAdapter(bookAdapter);
 
-        loadBooks();
-
         findBookText = view.findViewById(R.id.findBook);
         search_btn.setOnClickListener(v -> {
             String query = findBookText.getText().toString().toLowerCase().trim();
@@ -88,6 +94,11 @@ public class MyBooksFragment extends Fragment {
             bookAdapter.FilterList(filteredBooks);
         });
 
+        db = FirebaseFirestore.getInstance();
+        auth = FirebaseAuth.getInstance();
+        currentUserId = auth.getCurrentUser().getUid();
+
+        getUserData();
 
         return view;
     }
@@ -151,6 +162,29 @@ public class MyBooksFragment extends Fragment {
             }
         }
         bookAdapter.FilterList(filteredBooks);
+    }
+
+    private void getUserData() {
+        db.collection("users")
+                .document(currentUserId)
+                .collection("books")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        books.clear();
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            String title = document.getString("title");
+                            String author = document.getString("author");
+                            String coverUrl = document.getString("cover_url");
+                            String readingStatus = document.getString("reading_status");
+
+                            books.add(new Book(title, author, coverUrl, readingStatus));
+                        }
+                        bookAdapter.notifyDataSetChanged();
+                    } else {
+                        Toast.makeText(getContext(), "Помилка завантаження книг", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private void loadBooks() {
