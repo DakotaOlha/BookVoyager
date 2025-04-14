@@ -11,16 +11,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.Firebase;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -30,108 +25,156 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class RegistrationActivity extends AppCompatActivity {
 
-    private FirebaseAuth auth;
-    private EditText signupEmail, signupPassword, enterNick, enterDay, enterMonth, enterYear;
+    private static final String PREFS_NAME = "userPrefs";
+    private static final String KEY_IS_LOGGED_IN = "isLoggedIn";
+    private static final String KEY_EMAIL = "email";
+    private static final String KEY_UID = "uid";
 
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private EditText emailEditText;
+    private EditText passwordEditText;
+    private EditText nicknameEditText;
+    private EditText dayEditText;
+    private EditText monthEditText;
+    private EditText yearEditText;
+    private FirebaseAuth auth;
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
 
-        fullScreen();
+        setupFullScreen();
+        initializeFirebase();
+        initializeViews();
+        setupRegistrationButton();
 
-        auth = FirebaseAuth.getInstance();
-        db = FirebaseFirestore.getInstance();
-        signupEmail = findViewById(R.id.enterEmail);
-        signupPassword = findViewById(R.id.enterPassword);
-        enterNick = findViewById(R.id.enterNick);
-        enterDay = findViewById(R.id.enterDay);
-        enterMonth = findViewById(R.id.enterMonth);
-        enterYear = findViewById(R.id.enterYear);
-
-
-        Button registrationButton = findViewById(R.id.registration);
-        registrationButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String user = signupEmail.getText().toString().trim();
-                String pass = signupPassword.getText().toString().trim();
-                String nick = enterNick.getText().toString().trim();
-                String day = enterDay.getText().toString().trim();
-                String month = enterMonth.getText().toString().trim();
-                String year = enterYear.getText().toString().trim();
-
-                if(nick.isEmpty()){
-                    enterNick.setError("is empty");
-                }
-                else if(user.isEmpty()){
-                    signupEmail.setError("is empty");
-                }
-                else if(pass.isEmpty()) {
-                    signupPassword.setError("is empty");
-                }
-                else if(day.isEmpty() || month.isEmpty() || year.isEmpty()){
-                    enterYear.setError("empty");
-                }
-                else {
-                    auth.createUserWithEmailAndPassword(user, pass)
-                            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if(task.isSuccessful()){
-                                FirebaseUser currentUser = auth.getCurrentUser();
-                                if(currentUser != null) {
-                                    Map<String, Object> userData = new HashMap<>();
-                                    String birth = day + "-" + month + "-" + year;
-                                    userData.put("nickname", nick);
-                                    userData.put("email", user);
-                                    userData.put("birth", birth);
-                                    userData.put("registration_date", FieldValue.serverTimestamp());
-                                    userData.put("uid", currentUser.getUid());
-
-                                    userData.put("books", new ArrayList<>());
-                                    userData.put("settings", new HashMap<String, Object>());
-
-
-                                    db.collection("users")
-                                            .document(currentUser.getUid())
-                                            .set(userData)
-                                            .addOnCompleteListener(dbTask -> {
-                                                if(dbTask.isSuccessful()){
-                                                    // Додатково зберігаємо в SharedPreferences
-                                                    SharedPreferences preferences = getSharedPreferences("userPrefs", MODE_PRIVATE);
-                                                    SharedPreferences.Editor editor = preferences.edit();
-                                                    editor.putBoolean("isLoggedIn", true);
-                                                    editor.putString("email", user);
-                                                    editor.putString("uid", currentUser.getUid());
-                                                    editor.apply();
-
-                                                    Toast.makeText(RegistrationActivity.this, "Реєстрація успішна!", Toast.LENGTH_SHORT).show();
-                                                    startActivity(new Intent(RegistrationActivity.this, MainMenuActivity.class));
-                                                    finish();
-                                                } else {
-                                                    Toast.makeText(RegistrationActivity.this, "Помилка збереження даних", Toast.LENGTH_SHORT).show();
-                                                }
-                                            });
-                                }
-                            }
-                            else {
-                                Toast.makeText(RegistrationActivity.this, "Помилка реєстрації", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
-
-                }
-            }
-        });
     }
 
-    private void fullScreen(){
+    private void setupRegistrationButton() {
+        Button registrationButton = findViewById(R.id.registration);
+        registrationButton.setOnClickListener(v -> attemptRegistration());
+    }
+
+    private void attemptRegistration() {
+        String email = emailEditText.getText().toString().trim();
+        String password = passwordEditText.getText().toString().trim();
+        String nickname = nicknameEditText.getText().toString().trim();
+        String day = dayEditText.getText().toString().trim();
+        String month = monthEditText.getText().toString().trim();
+        String year = yearEditText.getText().toString().trim();
+
+        if (validateInput(email, password, nickname, day, month, year)) {
+            registerUser(email, password, nickname, day, month, year);
+        }
+    }
+
+    private void registerUser(String email, String password, String nickname, String day, String month, String year) {
+        auth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        FirebaseUser user = auth.getCurrentUser();
+                        if (user != null) {
+                            saveUserData(user, email, nickname, day, month, year);
+                        }
+                    } else {
+                        showRegistrationError(Objects.requireNonNull(task.getException()).getMessage());
+                    }
+                });
+    }
+
+    private void saveUserData(FirebaseUser user, String email, String nickname,
+                              String day, String month, String year) {
+        String birthDate = day + "-" + month + "-" + year;
+
+        Map<String, Object> userData = new HashMap<>();
+        userData.put("nickname", nickname);
+        userData.put("email", email);
+        userData.put("birth", birthDate);
+        userData.put("registration_date", FieldValue.serverTimestamp());
+        userData.put("uid", user.getUid());
+        userData.put("books", new ArrayList<>());
+        userData.put("settings", new HashMap<>());
+
+        db.collection("users")
+                .document(user.getUid())
+                .set(userData)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        saveLoginPreferences(user, email);
+                        navigateToMainMenu();
+                        showSuccessMessage();
+                    } else {
+                        showDatabaseError();
+                    }
+                });
+    }
+
+    private void saveLoginPreferences(FirebaseUser user, String email) {
+        SharedPreferences preferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        preferences.edit()
+                .putBoolean(KEY_IS_LOGGED_IN, true)
+                .putString(KEY_EMAIL, email)
+                .putString(KEY_UID, user.getUid())
+                .apply();
+    }
+
+    private void navigateToMainMenu() {
+        startActivity(new Intent(this, MainMenuActivity.class));
+        finish();
+    }
+
+    private void showSuccessMessage() {
+        Toast.makeText(this, "Registration successful!", Toast.LENGTH_SHORT).show();
+    }
+
+    private void showRegistrationError(String errorMessage) {
+        Toast.makeText(this, "Registration failed: " + errorMessage, Toast.LENGTH_LONG).show();
+    }
+
+    private void showDatabaseError() {
+        Toast.makeText(this, "Failed to save user data", Toast.LENGTH_SHORT).show();
+    }
+
+    private boolean validateInput(String email, String password, String nickname, String day, String month, String year) {
+        if (nickname.isEmpty()) {
+            nicknameEditText.setError("Nickname cannot be empty");
+            return false;
+        }
+        if (email.isEmpty()) {
+            emailEditText.setError("Email cannot be empty");
+            return false;
+        }
+        if (password.isEmpty()) {
+            passwordEditText.setError("Password cannot be empty");
+            return false;
+        }
+        if (day.isEmpty() || month.isEmpty() || year.isEmpty()) {
+            yearEditText.setError("Birth date cannot be empty");
+            return false;
+        }
+        return true;
+    }
+
+    private void initializeViews() {
+        emailEditText = findViewById(R.id.enterEmail);
+        passwordEditText = findViewById(R.id.enterPassword);
+        nicknameEditText = findViewById(R.id.enterNick);
+        dayEditText = findViewById(R.id.enterDay);
+        monthEditText = findViewById(R.id.enterMonth);
+        yearEditText = findViewById(R.id.enterYear);
+    }
+
+    private void initializeFirebase() {
+        auth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+    }
+
+    private void setupFullScreen(){
         Window window = getWindow();
         window.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                 WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
