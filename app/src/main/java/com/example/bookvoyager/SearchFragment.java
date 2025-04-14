@@ -27,10 +27,16 @@ import okhttp3.Response;
 
 public class SearchFragment extends Fragment {
 
+    private static final String BASE_API_URL = "https://www.googleapis.com/books/v1/volumes?q=";
+    private static final String MAX_RESULTS = "&maxResults=20";
+    private static final String DEFAULT_AUTHOR = "Автор невідомий";
+    private static final String DEFAULT_TITLE = "Назва невідома";
+
     private RecyclerView recyclerView;
-    private EditText findBookText;
+    private EditText searchEditText;
     private BookAdapter bookAdapter;
-    private List<Book> books;
+
+    private final List<Book> books = new ArrayList<>();
 
     @Nullable
     @Override
@@ -38,86 +44,190 @@ public class SearchFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
 
-        ImageView search_btn = view.findViewById(R.id.search_image);
-
-        recyclerView = view.findViewById(R.id.bookRecyclerView);
-        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
-
-        books = new ArrayList<>();
-        bookAdapter = new BookAdapter(books);
-        recyclerView.setAdapter(bookAdapter);
-
-        findBookText = view.findViewById(R.id.findNewBook);
-        search_btn.setOnClickListener(v -> {
-            String query = findBookText.getText().toString().toLowerCase().trim();
-            if (!query.isEmpty()) {
-                searchBooks(query);
-//                fetchBookInfo(isbn);
-            } else {
-                Toast.makeText(getActivity(), "Введіть ISBN", Toast.LENGTH_SHORT).show();
-            }
-        });
+        initializeViews(view);
+        setupRecyclerView();
+        setupSearchButton(view);
 
         return view;
+    }
+
+    private void initializeViews(View view) {
+        recyclerView = view.findViewById(R.id.bookRecyclerView);
+        searchEditText = view.findViewById(R.id.findNewBook);
+    }
+
+    private void setupRecyclerView() {
+        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
+        bookAdapter = new BookAdapter(books);
+        recyclerView.setAdapter(bookAdapter);
+    }
+
+    private void setupSearchButton(View view) {
+        ImageView searchButton = view.findViewById(R.id.search_image);
+        searchButton.setOnClickListener(v -> performSearch());
+    }
+
+    private void performSearch() {
+        String query = searchEditText.getText().toString().trim();
+
+        if (query.isEmpty()) {
+            showToast("Будь ласка, введіть пошуковий запит");
+            return;
+        }
+
+        searchBooks(query);
     }
 
     private void searchBooks(String query) {
         new Thread(() -> {
             try {
-                OkHttpClient client = new OkHttpClient();
-                String url = "https://www.googleapis.com/books/v1/volumes?q=" + query + "&maxResults=20";
-                Request request = new Request.Builder().url(url).build();
-                Response response = client.newCall(request).execute();
-                String jsonData = response.body().string();
-
-                JSONObject jsonObject = new JSONObject(jsonData);
-                JSONArray items = jsonObject.optJSONArray("items");
-
-                if (items == null || items.length() == 0) {
-                    requireActivity().runOnUiThread(() ->
-                            Toast.makeText(getContext(), "Книги не знайдено", Toast.LENGTH_SHORT).show()
-                    );
-                    return;
-                }
-
-                List<Book> foundBooks = new ArrayList<>();
-                for (int i = 0; i < items.length(); i++) {
-                    JSONObject item = items.getJSONObject(i);
-                    JSONObject volumeInfo = item.optJSONObject("volumeInfo");
-                    if (volumeInfo == null) continue;
-
-                    String title = volumeInfo.optString("title", "Назва невідома");
-
-                    JSONArray authorsArray = volumeInfo.optJSONArray("authors");
-                    String authors = (authorsArray != null && authorsArray.length() > 0)
-                            ? authorsArray.join(", ").replace("\"", "")
-                            : "Автор невідомий";
-
-                    String imageUrl = null;
-                    if (volumeInfo.has("imageLinks")) {
-                        JSONObject imageLinks = volumeInfo.getJSONObject("imageLinks");
-                        if (imageLinks.has("thumbnail")) {
-                            imageUrl = imageLinks.getString("thumbnail")
-                                    .replace("http://", "https://");
-                        }
-                    }
-
-                    foundBooks.add(new Book(title, authors, imageUrl, "Not read"));
-                }
-
-                requireActivity().runOnUiThread(() -> {
-                    books.clear();
-                    books.addAll(foundBooks);
-                    bookAdapter.notifyDataSetChanged();
-                });
-
+                String apiUrl = BASE_API_URL + query + MAX_RESULTS;
+                String jsonData = fetchDataFromApi(apiUrl);
+                processApiResponse(jsonData);
             } catch (Exception e) {
-                e.printStackTrace();
-                requireActivity().runOnUiThread(() ->
-                        Toast.makeText(getContext(), "Помилка пошуку: " + e.getMessage(), Toast.LENGTH_LONG).show()
-                );
+                handleSearchError(e);
             }
         }).start();
     }
+
+    private String fetchDataFromApi(String url) throws Exception {
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder().url(url).build();
+        Response response = client.newCall(request).execute();
+        return response.body().string();
+    }
+
+    private void processApiResponse(String jsonData) throws Exception {
+        JSONObject jsonObject = new JSONObject(jsonData);
+        JSONArray items = jsonObject.optJSONArray("items");
+
+        if (items == null || items.length() == 0) {
+            showToastOnUiThread("Книги не знайдено");
+            return;
+        }
+
+        List<Book> foundBooks = parseBooksFromJson(items);
+        updateUiWithBooks(foundBooks);
+    }
+
+    private List<Book> parseBooksFromJson(JSONArray items) throws Exception {
+        List<Book> foundBooks = new ArrayList<>();
+
+        for (int i = 0; i < items.length(); i++) {
+            JSONObject item = items.getJSONObject(i);
+            JSONObject volumeInfo = item.optJSONObject("volumeInfo");
+            if (volumeInfo == null) continue;
+
+            Book book = createBookFromVolumeInfo(volumeInfo);
+            foundBooks.add(book);
+        }
+
+        return foundBooks;
+    }
+
+    private Book createBookFromVolumeInfo(JSONObject volumeInfo) throws Exception {
+        String title = volumeInfo.optString("title", DEFAULT_TITLE);
+        String authors = getAuthorsFromJson(volumeInfo);
+        String imageUrl = getImageUrlFromJson(volumeInfo);
+
+        return new Book(title, authors, imageUrl, "Not read");
+    }
+
+    private String getAuthorsFromJson(JSONObject volumeInfo) throws Exception {
+        JSONArray authorsArray = volumeInfo.optJSONArray("authors");
+        return (authorsArray != null && authorsArray.length() > 0)
+                ? authorsArray.join(", ").replace("\"", "")
+                : DEFAULT_AUTHOR;
+    }
+
+    private String getImageUrlFromJson(JSONObject volumeInfo) throws Exception {
+        if (!volumeInfo.has("imageLinks")) return null;
+
+        JSONObject imageLinks = volumeInfo.getJSONObject("imageLinks");
+        if (!imageLinks.has("thumbnail")) return null;
+
+        return imageLinks.getString("thumbnail")
+                .replace("http://", "https://");
+    }
+
+    private void updateUiWithBooks(List<Book> books) {
+        requireActivity().runOnUiThread(() -> {
+            this.books.clear();
+            this.books.addAll(books);
+            bookAdapter.notifyDataSetChanged();
+        });
+    }
+
+    private void handleSearchError(Exception e) {
+        e.printStackTrace();
+        showToastOnUiThread("Помилка пошуку: " + e.getMessage());
+    }
+
+    private void showToastOnUiThread(String message) {
+        requireActivity().runOnUiThread(() -> showToast(message));
+    }
+
+    private void showToast(String message) {
+        Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+    }
+
+//    private void searchBooks(String query) {
+//        new Thread(() -> {
+//            try {
+//                OkHttpClient client = new OkHttpClient();
+//                String url = "https://www.googleapis.com/books/v1/volumes?q=" + query + "&maxResults=20";
+//                Request request = new Request.Builder().url(url).build();
+//                Response response = client.newCall(request).execute();
+//                String jsonData = response.body().string();
+//
+//                JSONObject jsonObject = new JSONObject(jsonData);
+//                JSONArray items = jsonObject.optJSONArray("items");
+//
+//                if (items == null || items.length() == 0) {
+//                    requireActivity().runOnUiThread(() ->
+//                            Toast.makeText(getContext(), "Книги не знайдено", Toast.LENGTH_SHORT).show()
+//                    );
+//                    return;
+//                }
+//
+//                List<Book> foundBooks = new ArrayList<>();
+//                for (int i = 0; i < items.length(); i++) {
+//                    JSONObject item = items.getJSONObject(i);
+//                    JSONObject volumeInfo = item.optJSONObject("volumeInfo");
+//                    if (volumeInfo == null) continue;
+//
+//                    String title = volumeInfo.optString("title", "Назва невідома");
+//
+//                    JSONArray authorsArray = volumeInfo.optJSONArray("authors");
+//                    String authors = (authorsArray != null && authorsArray.length() > 0)
+//                            ? authorsArray.join(", ").replace("\"", "")
+//                            : "Автор невідомий";
+//
+//                    String imageUrl = null;
+//                    if (volumeInfo.has("imageLinks")) {
+//                        JSONObject imageLinks = volumeInfo.getJSONObject("imageLinks");
+//                        if (imageLinks.has("thumbnail")) {
+//                            imageUrl = imageLinks.getString("thumbnail")
+//                                    .replace("http://", "https://");
+//                        }
+//                    }
+//
+//                    foundBooks.add(new Book(title, authors, imageUrl, "Not read"));
+//                }
+//
+//                requireActivity().runOnUiThread(() -> {
+//                    books.clear();
+//                    books.addAll(foundBooks);
+//                    bookAdapter.notifyDataSetChanged();
+//                });
+//
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//                requireActivity().runOnUiThread(() ->
+//                        Toast.makeText(getContext(), "Помилка пошуку: " + e.getMessage(), Toast.LENGTH_LONG).show()
+//                );
+//            }
+//        }).start();
+//    }
 
 }
