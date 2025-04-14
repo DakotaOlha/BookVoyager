@@ -9,6 +9,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.List;
 
 public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder> {
@@ -48,7 +50,29 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
         Book book = books.get(position);
         holder.bookTitle.setText(book.getTitle());
         holder.bookAuthor.setText(book.getAuthor());
-        holder.bookCover.setImageResource(book.getCoverResId()); // Установлюємо обкладинку
+        String coverUrl = book.getCoverUrl();
+
+        if (coverUrl != null && (coverUrl.startsWith("http://") || coverUrl.startsWith("https://"))) {
+            // Завантаження зображення з інтернету
+            Picasso.get()
+                    .load(coverUrl)
+                    .placeholder(R.drawable.agata) // тимчасове зображення
+                    .error(R.drawable.agata)         // якщо помилка
+                    .into(holder.bookCover);
+        } else if (coverUrl != null && !coverUrl.isEmpty()) {
+            // Завантаження локального ресурсу
+            int resId = holder.itemView.getContext().getResources()
+                    .getIdentifier(coverUrl, "drawable", holder.itemView.getContext().getPackageName());
+
+            if (resId != 0) {
+                holder.bookCover.setImageResource(resId);
+            } else {
+                holder.bookCover.setImageResource(R.drawable.agata); // запасне зображення
+            }
+        }
+        else {
+            holder.bookCover.setImageResource(R.drawable.agata);
+        }
     }
 
     @Override
