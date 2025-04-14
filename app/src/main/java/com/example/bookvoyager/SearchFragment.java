@@ -15,11 +15,17 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -36,6 +42,10 @@ public class SearchFragment extends Fragment {
     private EditText searchEditText;
     private SearchBookAdapter bookAdapter;
 
+    private FirebaseAuth auth;
+    private FirebaseFirestore db;
+    private String currentUserId;
+
     private final List<Book> books = new ArrayList<>();
 
     @Nullable
@@ -44,11 +54,18 @@ public class SearchFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
 
+        initializeFirebase();
         initializeViews(view);
         setupRecyclerView();
         setupSearchButton(view);
 
         return view;
+    }
+
+    private void initializeFirebase() {
+        auth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+        currentUserId = auth.getCurrentUser() != null ? auth.getCurrentUser().getUid() : null;
     }
 
     private void initializeViews(View view) {
@@ -58,8 +75,35 @@ public class SearchFragment extends Fragment {
 
     private void setupRecyclerView() {
         recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 1));
-        bookAdapter = new SearchBookAdapter(books);
+        bookAdapter = new SearchBookAdapter(books, this::addBookToUserLibrary);
         recyclerView.setAdapter(bookAdapter);
+    }
+
+    private void addBookToUserLibrary(Book book) {
+        if (currentUserId == null) {
+            showToast("Будь ласка, увійдіть в систему");
+            return;
+        }
+
+        Map<String, Object> bookData = new HashMap<>();
+        bookData.put("title", book.getTitle());
+        bookData.put("author", book.getAuthor());
+        bookData.put("coverUrl", book.getCoverUrl());
+        bookData.put("readingStatus", "Not read");
+        bookData.put("addedDate", FieldValue.serverTimestamp());
+
+        db.collection("users")
+                .document(currentUserId)
+                .collection("books")
+                .document() // автоматичний ID
+                .set(bookData)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        showToast("Книгу додано до бібліотеки");
+                    } else {
+                        showToast("Помилка при додаванні книги");
+                    }
+                });
     }
 
     private void setupSearchButton(View view) {
@@ -130,6 +174,8 @@ public class SearchFragment extends Fragment {
         String authors = getAuthorsFromJson(volumeInfo);
         String imageUrl = getImageUrlFromJson(volumeInfo);
 
+        System.out.println("Book cover URL: " + imageUrl);
+
         return new Book(title, authors, imageUrl, "Not read");
     }
 
@@ -141,13 +187,17 @@ public class SearchFragment extends Fragment {
     }
 
     private String getImageUrlFromJson(JSONObject volumeInfo) throws Exception {
-        if (!volumeInfo.has("imageLinks")) return null;
+        if (!volumeInfo.has("imageLinks"))
+            return null;
 
         JSONObject imageLinks = volumeInfo.getJSONObject("imageLinks");
-        if (!imageLinks.has("thumbnail")) return null;
+        if (!imageLinks.has("thumbnail"))
+            return null;
 
-        return imageLinks.getString("thumbnail")
-                .replace("http://", "https://");
+        String thumbnailUrl = imageLinks.getString("thumbnail");
+        thumbnailUrl = thumbnailUrl.replace("http://", "https://");
+
+        return thumbnailUrl;
     }
 
     private void updateUiWithBooks(List<Book> books) {
@@ -170,64 +220,5 @@ public class SearchFragment extends Fragment {
     private void showToast(String message) {
         Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
     }
-
-//    private void searchBooks(String query) {
-//        new Thread(() -> {
-//            try {
-//                OkHttpClient client = new OkHttpClient();
-//                String url = "https://www.googleapis.com/books/v1/volumes?q=" + query + "&maxResults=20";
-//                Request request = new Request.Builder().url(url).build();
-//                Response response = client.newCall(request).execute();
-//                String jsonData = response.body().string();
-//
-//                JSONObject jsonObject = new JSONObject(jsonData);
-//                JSONArray items = jsonObject.optJSONArray("items");
-//
-//                if (items == null || items.length() == 0) {
-//                    requireActivity().runOnUiThread(() ->
-//                            Toast.makeText(getContext(), "Книги не знайдено", Toast.LENGTH_SHORT).show()
-//                    );
-//                    return;
-//                }
-//
-//                List<Book> foundBooks = new ArrayList<>();
-//                for (int i = 0; i < items.length(); i++) {
-//                    JSONObject item = items.getJSONObject(i);
-//                    JSONObject volumeInfo = item.optJSONObject("volumeInfo");
-//                    if (volumeInfo == null) continue;
-//
-//                    String title = volumeInfo.optString("title", "Назва невідома");
-//
-//                    JSONArray authorsArray = volumeInfo.optJSONArray("authors");
-//                    String authors = (authorsArray != null && authorsArray.length() > 0)
-//                            ? authorsArray.join(", ").replace("\"", "")
-//                            : "Автор невідомий";
-//
-//                    String imageUrl = null;
-//                    if (volumeInfo.has("imageLinks")) {
-//                        JSONObject imageLinks = volumeInfo.getJSONObject("imageLinks");
-//                        if (imageLinks.has("thumbnail")) {
-//                            imageUrl = imageLinks.getString("thumbnail")
-//                                    .replace("http://", "https://");
-//                        }
-//                    }
-//
-//                    foundBooks.add(new Book(title, authors, imageUrl, "Not read"));
-//                }
-//
-//                requireActivity().runOnUiThread(() -> {
-//                    books.clear();
-//                    books.addAll(foundBooks);
-//                    bookAdapter.notifyDataSetChanged();
-//                });
-//
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//                requireActivity().runOnUiThread(() ->
-//                        Toast.makeText(getContext(), "Помилка пошуку: " + e.getMessage(), Toast.LENGTH_LONG).show()
-//                );
-//            }
-//        }).start();
-//    }
 
 }

@@ -202,7 +202,7 @@ public class MyBooksFragment extends Fragment {
         return new Book(
                 document.getString("title"),
                 document.getString("author"),
-                document.getString("cover_url"),
+                document.getString("coverUrl"),
                 document.getString("reading_status")
         );
     }

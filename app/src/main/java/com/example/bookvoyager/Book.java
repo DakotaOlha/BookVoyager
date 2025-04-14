@@ -5,16 +5,16 @@ public class Book {
     private String title;
     private String author;
     private int yearIssue;
-    private String urlImg;
+    private String coverUrl;
     private String publisher;
     private String description;
 
     private String progressReading;
 
-    public Book(String title, String author, String urlImg, String isRead) {
+    public Book(String title, String author, String coverUrl, String isRead) {
         this.title = title;
         this.author = author;
-        this.urlImg = urlImg;
+        this.coverUrl = coverUrl;
         this.progressReading = isRead;
     }
 
@@ -27,7 +27,7 @@ public class Book {
     }
 
     public String getCoverUrl() {
-        return urlImg;
+        return coverUrl;
     }
 
     public String getProgressReading(){
