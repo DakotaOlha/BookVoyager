@@ -1,6 +1,7 @@
 package com.example.bookvoyager;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
@@ -23,8 +24,10 @@ import com.google.firebase.Firebase;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -88,24 +91,31 @@ public class RegistrationActivity extends AppCompatActivity {
                                     userData.put("nickname", nick);
                                     userData.put("email", user);
                                     userData.put("birth", birth);
+                                    userData.put("registration_date", FieldValue.serverTimestamp());
                                     userData.put("uid", currentUser.getUid());
+
+                                    userData.put("books", new ArrayList<>());
+                                    userData.put("settings", new HashMap<String, Object>());
 
 
                                     db.collection("users")
                                             .document(currentUser.getUid())
                                             .set(userData)
-                                            .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<Void> task) {
-                                                    if(task.isSuccessful()){
-                                                        Toast.makeText(RegistrationActivity.this, "Реєстрація успішна!", Toast.LENGTH_SHORT).show();
-                                                        Intent intent = new Intent(RegistrationActivity.this, MainMenuActivity.class);
-                                                        startActivity(intent);
-                                                    }
-                                                    else{
+                                            .addOnCompleteListener(dbTask -> {
+                                                if(dbTask.isSuccessful()){
+                                                    // Додатково зберігаємо в SharedPreferences
+                                                    SharedPreferences preferences = getSharedPreferences("userPrefs", MODE_PRIVATE);
+                                                    SharedPreferences.Editor editor = preferences.edit();
+                                                    editor.putBoolean("isLoggedIn", true);
+                                                    editor.putString("email", user);
+                                                    editor.putString("uid", currentUser.getUid());
+                                                    editor.apply();
 
-                                                        Toast.makeText(RegistrationActivity.this, "Помилка збереження даних", Toast.LENGTH_SHORT).show();
-                                                    }
+                                                    Toast.makeText(RegistrationActivity.this, "Реєстрація успішна!", Toast.LENGTH_SHORT).show();
+                                                    startActivity(new Intent(RegistrationActivity.this, MainMenuActivity.class));
+                                                    finish();
+                                                } else {
+                                                    Toast.makeText(RegistrationActivity.this, "Помилка збереження даних", Toast.LENGTH_SHORT).show();
                                                 }
                                             });
                                 }
