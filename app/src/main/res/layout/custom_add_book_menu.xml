@@ -12,7 +12,7 @@
         android:id="@+id/add_by_isbn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Add by ISBN"
+        android:text="Add by name"
         android:textColor="@color/Background"
         android:textAppearance="?attr/textAppearanceListItem"
         android:padding="8dp" />

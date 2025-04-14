@@ -9,7 +9,7 @@
     <item
         android:id="@+id/ViewAnalytics"
         android:title=""
-        android:icon="@drawable/analytics_icon"/>
+        android:icon="@drawable/main_search_icon"/>
 
     <item
         android:id="@+id/empty"

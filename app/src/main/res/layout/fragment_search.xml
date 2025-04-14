@@ -1,14 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/Background"
     tools:context=".SearchFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+    <EditText
+        android:id="@+id/findNewBook"
+        android:layout_width="300dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="21dp"
+        android:background="@drawable/find"
+        android:inputType="text"
+        android:paddingStart="14dp"
+        android:paddingEnd="44dp"
+        android:textColor="@color/BlackBrown"
+        android:textColorHint="@color/hint"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-</FrameLayout>
+    <Button
+        android:id="@+id/account_button"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/account"
+        app:backgroundTint="@null"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/account_image"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="26dp"
+        android:layout_marginEnd="26dp"
+        android:clickable="false"
+        android:elevation="10px"
+        android:focusable="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/user2" />
+
+    <ImageView
+        android:id="@+id/search_image"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="262dp"
+        android:layout_marginEnd="8dp"
+        android:src="@drawable/search_icon"
+        app:layout_constraintBottom_toBottomOf="@+id/findNewBook"
+        app:layout_constraintEnd_toEndOf="@+id/findNewBook"
+        app:layout_constraintStart_toStartOf="@+id/findNewBook"
+        app:layout_constraintTop_toTopOf="@+id/findNewBook" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/bookRecyclerView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="78dp"
+        android:padding="8dp"
+        android:scrollbars="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/findNewBook"
+        app:layout_constraintVertical_bias="0.0" />
+</androidx.constraintlayout.widget.ConstraintLayout>

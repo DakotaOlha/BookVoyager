@@ -92,28 +92,6 @@ public class MyBooksFragment extends Fragment {
         return view;
     }
 
-//    private void setupKeyboardListener(View rootView) {
-//        findBookText.setOnFocusChangeListener((v, hasFocus) -> {
-//            wasFocused = hasFocus;
-//        });
-//
-//        rootView.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
-//            Rect r = new Rect();
-//            rootView.getWindowVisibleDisplayFrame(r);
-//            int screenHeight = rootView.getRootView().getHeight();
-//            int keypadHeight = screenHeight - r.bottom;
-//
-//            boolean isKeyboardOpen = keypadHeight > screenHeight * 0.15;
-//
-//            if (!isKeyboardOpen && wasFocused) {
-//                findBookText.clearFocus();
-//                InputMethodManager imm = (InputMethodManager) requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-//                imm.hideSoftInputFromWindow(findBookText.getWindowToken(), 0);
-//                wasFocused = false;
-//            }
-//        });
-//    }
-
     public void ifReadButtonClick(View view){
         if(ifRead.getText().equals("Is read")){
             ifRead.setText("In process");
@@ -176,14 +154,14 @@ public class MyBooksFragment extends Fragment {
     }
 
     private void loadBooks() {
-        books.add(new Book("Книга 1", "Автор 1", R.drawable.agata, "In process"));
-        books.add(new Book("Книга 2", "Автор 2", R.drawable.agata, "Is read"));
-        books.add(new Book("Книга 3", "Автор 3", R.drawable.agata, "In process"));
-        books.add(new Book("Книга 4", "Автор 4", R.drawable.agata, "Not read"));
-        books.add(new Book("Книга 1", "Автор 3", R.drawable.agata, "Not read"));
-        books.add(new Book("Книга 2", "Автор 2", R.drawable.agata, "Not read"));
-        books.add(new Book("Книга 3", "Автор 1", R.drawable.agata, "Not read"));
-        books.add(new Book("Книга 4", "Автор 4", R.drawable.agata, "In process"));
+        books.add(new Book("Книга 1", "Автор 1", "R.drawable.agata", "In process"));
+        books.add(new Book("Книга 2", "Автор 2", "R.drawable.agata", "Is read"));
+        books.add(new Book("Книга 3", "Автор 3", "R.drawable.agata", "In process"));
+        books.add(new Book("Книга 4", "Автор 4", "R.drawable.agata", "Not read"));
+        books.add(new Book("Книга 1", "Автор 3", "R.drawable.agata", "Not read"));
+        books.add(new Book("Книга 2", "Автор 2", "R.drawable.agata", "Not read"));
+        books.add(new Book("Книга 3", "Автор 1", "R.drawable.agata", "Not read"));
+        books.add(new Book("Книга 4", "Автор 4", "R.drawable.agata", "In process"));
         bookAdapter.notifyDataSetChanged();
     }
 

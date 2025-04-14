@@ -57,6 +57,9 @@ public class MainMenuActivity extends AppCompatActivity {
             else if(id == R.id.ViewMaps){
                 replaceFragment(new MapFragment());
             }
+            else if(id == R.id.ViewAnalytics){
+                replaceFragment(new SearchFragment());
+            }
 
             return true;
         });
@@ -69,7 +72,7 @@ public class MainMenuActivity extends AppCompatActivity {
         BottomNavigationView navView = findViewById(R.id.bottomNavigationView);
         Menu menu =  navView.getMenu();
         setupIconSize(menu.findItem(R.id.ViewBooks), R.drawable.my_book_icon, 40, 40);
-        setupIconSize(menu.findItem(R.id.ViewAnalytics), R.drawable.analytics_icon, 40, 29);
+        setupIconSize(menu.findItem(R.id.ViewAnalytics), R.drawable.main_search_icon, 34, 34);
         setupIconSize(menu.findItem(R.id.ViewMaps), R.drawable.map_iocn, 42, 34);
         setupIconSize(menu.findItem(R.id.ViewReward), R.drawable.awards_icon, 36, 36);
 
@@ -87,7 +90,8 @@ public class MainMenuActivity extends AppCompatActivity {
         popupWindow.setAnimationStyle(R.style.PopupSlideUpAnimation);
 
         popupView.findViewById(R.id.add_by_isbn).setOnClickListener(v -> {
-            Toast.makeText(this, "Add by ISBN selected", Toast.LENGTH_SHORT).show();
+            replaceFragment(new SearchFragment());
+            Toast.makeText(this, "Add by name", Toast.LENGTH_SHORT).show();
             popupWindow.dismiss();
         });
         popupView.findViewById(R.id.add_manually).setOnClickListener(v -> {
