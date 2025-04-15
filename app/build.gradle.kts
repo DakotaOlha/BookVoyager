@@ -52,7 +52,11 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.squareup.picasso:picasso:2.71828")
     implementation("com.google.android.gms:play-services-basement:18.2.0")
+    implementation ("com.google.android.material:material:1.11.0")
+    implementation ("com.journeyapps:zxing-android-embedded:4.3.0")
+
     implementation(libs.firebase.firestore)
+    implementation(libs.volley)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)

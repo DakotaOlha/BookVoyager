@@ -1,5 +1,6 @@
 package com.example.bookvoyager;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -94,7 +95,6 @@ public class MainMenuActivity extends AppCompatActivity {
 
         popupView.findViewById(R.id.add_by_isbn).setOnClickListener(v -> {
             replaceFragment(new SearchFragment());
-            Toast.makeText(this, "Add by name", Toast.LENGTH_SHORT).show();
             popupWindow.dismiss();
         });
         popupView.findViewById(R.id.add_manually).setOnClickListener(v -> {
@@ -102,7 +102,7 @@ public class MainMenuActivity extends AppCompatActivity {
             popupWindow.dismiss();
         });
         popupView.findViewById(R.id.add_by_photo).setOnClickListener(v -> {
-            Toast.makeText(this, "Add by photo selected", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, ScanISBNActivity.class));
             popupWindow.dismiss();
         });
 
