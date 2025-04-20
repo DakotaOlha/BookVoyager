@@ -118,40 +118,44 @@ public class ScanISBNActivity extends AppCompatActivity {
                 return;
             }
 
-            JSONObject volumeInfo = response.getJSONArray("items")
-                    .getJSONObject(0)
-                    .getJSONObject("volumeInfo");
+            JSONObject item = response.getJSONArray("items").getJSONObject(0);
+            JSONObject volumeInfo = item.getJSONObject("volumeInfo");
 
-            // Отримуємо основні дані про книгу
             String title = volumeInfo.getString("title");
             String authors = volumeInfo.has("authors") ?
                     joinJsonArray(volumeInfo.getJSONArray("authors"), ", ") : "Unknown author";
 
-            // Покращена обробка обкладинки
             String coverUrl = "";
             if (volumeInfo.has("imageLinks")) {
                 JSONObject imageLinks = volumeInfo.getJSONObject("imageLinks");
 
-                // Беремо thumbnail, якщо є, інакше smallThumbnail
                 if (imageLinks.has("thumbnail")) {
                     coverUrl = imageLinks.getString("thumbnail");
                 } else if (imageLinks.has("smallThumbnail")) {
                     coverUrl = imageLinks.getString("smallThumbnail");
                 }
 
-                // Виправлення URL
                 if (!coverUrl.isEmpty()) {
                     coverUrl = coverUrl.replace("http://", "https://");
 
                 }
             }
 
-            // Форматуємо поточну дату
+            int pageCount = volumeInfo.has("pageCount") ? volumeInfo.getInt("pageCount") : 0;
+            String description = volumeInfo.has("description") ? volumeInfo.getString("description") : "No description available";
+
+            String country = "Unknown country";
+            if (item.has("saleInfo")) {
+                JSONObject saleInfo = item.getJSONObject("saleInfo");
+                if (saleInfo.has("country")) {
+                    country = saleInfo.getString("country");
+                }
+            }
+
             SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy 'at' h:mm:ss a z", Locale.US);
             String addedDate = sdf.format(new Date());
 
-            // Зберігаємо книгу у Firebase
-            saveBookToFirestore(title, authors, coverUrl, isbn, addedDate);
+            saveBookToFirestore(title, authors, coverUrl, isbn, addedDate, pageCount, description, country);
 
         } catch (JSONException e) {
             Toast.makeText(this, "Error parsing data: " + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -170,19 +174,20 @@ public class ScanISBNActivity extends AppCompatActivity {
     }
 
     private void saveBookToFirestore(String title, String authors, String coverUrl,
-                                     String isbn, String addedDate) {
+                                     String isbn, String addedDate, int pageCount, String description, String country) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         HashMap<String, Object> book = new HashMap<>();
         book.put("title", title);
-        book.put("author", authors);
-        book.put("coverUrl", coverUrl); // Тепер це поле завжди буде, навіть якщо пусте
+        book.put("authors", authors);
+        book.put("coverUrl", coverUrl);
         book.put("isbn", isbn);
         book.put("addedDate", addedDate);
-        book.put("readingStatus", "Not read");
+        book.put("pageCount", pageCount);
+        book.put("description", description);
+        book.put("country", country);
 
-        // Додаємо логування для налагодження
         System.out.println("Saving book with coverUrl: " + coverUrl);
 
         db.collection("users")

@@ -1,10 +1,13 @@
 package com.example.bookvoyager;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,6 +20,16 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
 
     private List<Book> books;
 
+    public interface OnBookMenuClickListener {
+        void onBookMenuClick(Book book, View anchorView);
+    }
+
+    private OnBookMenuClickListener menuClickListener;
+
+    public void setOnBookMenuClickListener(OnBookMenuClickListener listener) {
+        this.menuClickListener = listener;
+    }
+
     public BookAdapter(List<Book> books) {
         this.books = books;
     }
@@ -27,7 +40,7 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
     }
 
     public static class BookViewHolder extends RecyclerView.ViewHolder {
-        ImageView bookCover;
+        ImageView bookCover, bookMenu;
         TextView bookTitle, bookAuthor;
 
         public BookViewHolder(View itemView) {
@@ -35,6 +48,7 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
             bookCover = itemView.findViewById(R.id.bookCover);
             bookTitle = itemView.findViewById(R.id.bookTitle);
             bookAuthor = itemView.findViewById(R.id.bookAuthor);
+            bookMenu = itemView.findViewById(R.id.bookMenu);
         }
     }
 
@@ -53,26 +67,48 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
         String coverUrl = book.getCoverUrl();
 
         if (coverUrl != null && (coverUrl.startsWith("http://") || coverUrl.startsWith("https://"))) {
-            // Завантаження зображення з інтернету
             Picasso.get()
                     .load(coverUrl)
-                    .placeholder(R.drawable.agata) // тимчасове зображення
-                    .error(R.drawable.agata)         // якщо помилка
+                    .placeholder(R.drawable.none_cover) // тимчасове зображення
+                    .error(R.drawable.none_cover)         // якщо помилка
                     .into(holder.bookCover);
         } else if (coverUrl != null && !coverUrl.isEmpty()) {
-            // Завантаження локального ресурсу
             int resId = holder.itemView.getContext().getResources()
                     .getIdentifier(coverUrl, "drawable", holder.itemView.getContext().getPackageName());
 
             if (resId != 0) {
                 holder.bookCover.setImageResource(resId);
             } else {
-                holder.bookCover.setImageResource(R.drawable.agata); // запасне зображення
+                holder.bookCover.setImageResource(R.drawable.none_cover); // запасне зображення
             }
         }
         else {
-            holder.bookCover.setImageResource(R.drawable.agata);
+            holder.bookCover.setImageResource(R.drawable.none_cover);
         }
+
+        holder.bookMenu.setOnClickListener(v -> {
+            if (menuClickListener != null) {
+                menuClickListener.onBookMenuClick(book, holder.bookMenu);
+            }
+        });
+
+//        holder.bookMenu.setOnClickListener(v -> {
+//            if (menuClickListener != null) {
+//                menuClickListener.onBookMenuClick(book, holder.bookMenu);
+//            } else {
+//                PopupMenu popup = new PopupMenu(context, holder.bookMenu);
+//                popup.getMenuInflater().inflate(R.menu.book_popup_menu, popup.getMenu());
+//                popup.setOnMenuItemClickListener(item -> {
+//                    if (item.getItemId() == R.id.menu_edit) {
+//                        new EditBookDialogFragment();
+//                        // Наприклад: openEditBookDialog(book);
+//                        return true;
+//                    }
+//                    return false;
+//                });
+//                popup.show();
+//            }
+//        });
     }
 
     @Override
