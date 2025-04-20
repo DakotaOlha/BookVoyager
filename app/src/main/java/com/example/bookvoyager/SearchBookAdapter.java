@@ -61,8 +61,8 @@ public class SearchBookAdapter extends RecyclerView.Adapter<SearchBookAdapter.Bo
         if (coverUrl != null && !coverUrl.isEmpty()) {
             Picasso.get()
                     .load(coverUrl)
-                    .placeholder(R.drawable.agata)
-                    .error(R.drawable.agata)
+                    .placeholder(R.drawable.none_cover)
+                    .error(R.drawable.none_cover)
                     .into(holder.bookCover, new Callback() {
                         @Override
                         public void onSuccess() {
@@ -75,7 +75,7 @@ public class SearchBookAdapter extends RecyclerView.Adapter<SearchBookAdapter.Bo
                         }
                     });
         } else {
-            holder.bookCover.setImageResource(R.drawable.agata);
+            holder.bookCover.setImageResource(R.drawable.none_cover);
         }
     }
 

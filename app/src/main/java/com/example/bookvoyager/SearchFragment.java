@@ -87,10 +87,13 @@ public class SearchFragment extends Fragment {
 
         Map<String, Object> bookData = new HashMap<>();
         bookData.put("title", book.getTitle());
-        bookData.put("author", book.getAuthor());
+        bookData.put("authors", book.getAuthor());
         bookData.put("coverUrl", book.getCoverUrl());
-        bookData.put("readingStatus", "Not read");
+        bookData.put("pageCount", book.getPageCount());
+        bookData.put("description", book.getDescription());
+        bookData.put("country", book.getCountry());
         bookData.put("addedDate", FieldValue.serverTimestamp());
+        bookData.put("isbn", book.getISBN());
 
         db.collection("users")
                 .document(currentUserId)
@@ -162,21 +165,33 @@ public class SearchFragment extends Fragment {
             JSONObject volumeInfo = item.optJSONObject("volumeInfo");
             if (volumeInfo == null) continue;
 
-            Book book = createBookFromVolumeInfo(volumeInfo);
+            Book book = createBookFromVolumeInfo(volumeInfo, item);
             foundBooks.add(book);
         }
 
         return foundBooks;
     }
 
-    private Book createBookFromVolumeInfo(JSONObject volumeInfo) throws Exception {
+    private Book createBookFromVolumeInfo(JSONObject volumeInfo, JSONObject item) throws Exception {
         String title = volumeInfo.optString("title", DEFAULT_TITLE);
         String authors = getAuthorsFromJson(volumeInfo);
         String imageUrl = getImageUrlFromJson(volumeInfo);
-
+        int pageCount = volumeInfo.optInt("pageCount", 0);
+        String description = volumeInfo.optString("description", "No description available");
+        String country = "Unknown country";
+        JSONObject saleInfo = item.optJSONObject("saleInfo");
+        if (saleInfo != null && saleInfo.has("country")) {
+            country = saleInfo.getString("country");
+        }
         System.out.println("Book cover URL: " + imageUrl);
 
-        return new Book(title, authors, imageUrl, "Not read");
+        String isbn = getIsbnFromJson(volumeInfo);
+        Book b = new Book(isbn, title, authors, imageUrl);
+        b.setCountry(country);
+        b.setDescription(description);
+        b.setPageCount(pageCount);
+
+        return b;
     }
 
     private String getAuthorsFromJson(JSONObject volumeInfo) throws Exception {
@@ -218,7 +233,19 @@ public class SearchFragment extends Fragment {
     }
 
     private void showToast(String message) {
-        Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
 
+    private String getIsbnFromJson(JSONObject volumeInfo) throws Exception {
+        JSONArray identifiers = volumeInfo.optJSONArray("industryIdentifiers");
+        if (identifiers != null) {
+            for (int i = 0; i < identifiers.length(); i++) {
+                JSONObject id = identifiers.getJSONObject(i);
+                if ("ISBN_13".equals(id.optString("type"))) {
+                    return id.optString("identifier");
+                }
+            }
+        }
+        return "Невідомо";
+    }
 }
