@@ -69,8 +69,8 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
         if (coverUrl != null && (coverUrl.startsWith("http://") || coverUrl.startsWith("https://"))) {
             Picasso.get()
                     .load(coverUrl)
-                    .placeholder(R.drawable.none_cover) // тимчасове зображення
-                    .error(R.drawable.none_cover)         // якщо помилка
+                    .placeholder(R.drawable.none_cover)
+                    .error(R.drawable.none_cover)
                     .into(holder.bookCover);
         } else if (coverUrl != null && !coverUrl.isEmpty()) {
             int resId = holder.itemView.getContext().getResources()
@@ -79,7 +79,7 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
             if (resId != 0) {
                 holder.bookCover.setImageResource(resId);
             } else {
-                holder.bookCover.setImageResource(R.drawable.none_cover); // запасне зображення
+                holder.bookCover.setImageResource(R.drawable.none_cover);
             }
         }
         else {
@@ -91,24 +91,6 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
                 menuClickListener.onBookMenuClick(book, holder.bookMenu);
             }
         });
-
-//        holder.bookMenu.setOnClickListener(v -> {
-//            if (menuClickListener != null) {
-//                menuClickListener.onBookMenuClick(book, holder.bookMenu);
-//            } else {
-//                PopupMenu popup = new PopupMenu(context, holder.bookMenu);
-//                popup.getMenuInflater().inflate(R.menu.book_popup_menu, popup.getMenu());
-//                popup.setOnMenuItemClickListener(item -> {
-//                    if (item.getItemId() == R.id.menu_edit) {
-//                        new EditBookDialogFragment();
-//                        // Наприклад: openEditBookDialog(book);
-//                        return true;
-//                    }
-//                    return false;
-//                });
-//                popup.show();
-//            }
-//        });
     }
 
     @Override
