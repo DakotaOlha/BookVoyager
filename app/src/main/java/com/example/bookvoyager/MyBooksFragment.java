@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -81,6 +82,35 @@ public class MyBooksFragment extends Fragment {
         recyclerView.setAdapter(bookAdapter);
     }
 
+    private void clickOnMoreDots(){
+        bookAdapter.setOnBookMenuClickListener((book, anchorView) -> {
+            PopupMenu popup = new PopupMenu(requireContext(), anchorView);
+            popup.getMenuInflater().inflate(R.menu.book_popup_menu, popup.getMenu());
+            popup.setOnMenuItemClickListener(item -> {
+                if (item.getItemId() == R.id.menu_edit) {
+                    db.collection("users")
+                            .document(currentUserId)
+                            .collection("books")
+                            .whereEqualTo("title", book.getTitle())
+                            .get()
+                            .addOnSuccessListener(queryDocumentSnapshots -> {
+                                if (!queryDocumentSnapshots.isEmpty()) {
+                                    String docId = queryDocumentSnapshots.getDocuments().get(0).getId();
+                                    new EditBookDialogFragment(book, docId, this::loadUserBooks)
+                                            .show(getParentFragmentManager(), "EditBook");
+                                }
+                            });
+                    return true;
+                } else if (item.getItemId() == R.id.menu_del) {
+                    deleteBookFromFirestore(book);
+                    return true;
+                }
+                return false;
+            });
+            popup.show();
+        });
+    }
+
     private void setupEventListeners(View view) {
         ImageView search_btn = view.findViewById(R.id.search_image);
         search_btn.setOnClickListener(v -> filterBooksBySearchQuery());
@@ -89,6 +119,8 @@ public class MyBooksFragment extends Fragment {
         sortingButton.setOnClickListener(v -> showSortingMenu(v));
 
         ifReadButton.setOnClickListener(v ->  toggleReadingFilter(v));
+
+        clickOnMoreDots();
     }
 
     private void filterBooksBySearchQuery(){
@@ -161,17 +193,17 @@ public class MyBooksFragment extends Fragment {
     }
 
     private void filterBooksByReadingStatus(String filter){
-        if(filter.equals("Read?")){
-            bookAdapter.FilterList(books);
-            return;
-        }
-        List<Book> filteredBooks = new ArrayList<>();
-        for (Book bk: books){
-            if(bk.getProgressReading().equals(filter)){
-                filteredBooks.add(bk);
-            }
-        }
-        bookAdapter.FilterList(filteredBooks);
+//        if(filter.equals("Read?")){
+//            bookAdapter.FilterList(books);
+//            return;
+//        }
+//        List<Book> filteredBooks = new ArrayList<>();
+//        for (Book bk: books){
+//            if(bk.getProgressReading().equals(filter)){
+//                filteredBooks.add(bk);
+//            }
+//        }
+//        bookAdapter.FilterList(filteredBooks);
     }
 
     private void loadUserBooks(){
@@ -199,12 +231,36 @@ public class MyBooksFragment extends Fragment {
     }
 
     private Book createBookFromDocument(QueryDocumentSnapshot document) {
-        return new Book(
-                document.getString("title"),
-                document.getString("author"),
-                document.getString("coverUrl"),
-                document.getString("reading_status")
-        );
+        Book b = new Book(document.getString("isbn"), document.getString("title"), document.getString("authors"),document.getString("coverUrl"));
+        b.setPageCount(Math.toIntExact(document.getLong("pageCount")));
+        b.setCountry(document.getString("country"));
+        b.setDescription(document.getString("description"));
+        return b;
+    }
+
+    private void deleteBookFromFirestore(Book book) {
+        db.collection("users")
+                .document(currentUserId)
+                .collection("books")
+                .whereEqualTo("title", book.getTitle())
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        String docId = queryDocumentSnapshots.getDocuments().get(0).getId();
+                        db.collection("users")
+                                .document(currentUserId)
+                                .collection("books")
+                                .document(docId)
+                                .delete()
+                                .addOnSuccessListener(aVoid -> {
+                                    Toast.makeText(getContext(), "Книгу видалено", Toast.LENGTH_SHORT).show();
+                                    loadUserBooks();
+                                })
+                                .addOnFailureListener(e -> {
+                                    Toast.makeText(getContext(), "Помилка при видаленні книги", Toast.LENGTH_SHORT).show();
+                                });
+                    }
+                });
     }
 
 }
