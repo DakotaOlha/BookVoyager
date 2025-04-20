@@ -23,4 +23,11 @@
         <item name="android:windowEnterAnimation">@anim/slide_in_up</item>
         <item name="android:windowExitAnimation">@anim/slide_out_down</item>
     </style>
+
+    <style name="BrownButtonStyle" parent="Widget.MaterialComponents.Button">
+        <item name="android:background">@drawable/rounded_brown_button</item>
+        <item name="android:textColor">@color/Background</item>
+        <item name="android:padding">6dp</item>
+        <item name="backgroundTint">@null</item>
+    </style>
 </resources>
