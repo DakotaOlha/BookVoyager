@@ -23,7 +23,7 @@
             android:layout_width="144dp"
             android:layout_height="192dp"
             android:scaleType="fitXY"
-            android:src="@drawable/agata" />
+            android:src="@drawable/none_cover" />
 
         <TextView
             android:id="@+id/bookTitle"
@@ -43,6 +43,17 @@
             android:text="Автор книги"
             android:textColor="@color/BlackBrown"
             android:textSize="12sp" />
+
+        <ImageView
+            android:id="@+id/bookMenu"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginTop="4dp"
+            android:contentDescription="Меню книги"
+            android:src="@drawable/more_horiz_24px"
+            android:clickable="true"
+            android:focusable="true"
+            />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
