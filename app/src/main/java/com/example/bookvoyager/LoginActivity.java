@@ -19,11 +19,12 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 
 public class LoginActivity extends AppCompatActivity {
 
-    private static final String PREFS_NAME = "userPrefs";
+    public static final String PREFS_NAME = "userPrefs";
     private static final String KEY_IS_LOGGED_IN = "isLoggedIn";
     private static final String KEY_EMAIL = "email";
 
@@ -74,12 +75,25 @@ public class LoginActivity extends AppCompatActivity {
         SharedPreferences preferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         boolean isLoggedIn = preferences.getBoolean(KEY_IS_LOGGED_IN, false);
 
-        if (isLoggedIn) {
+        // Додаємо перевірку Firebase Auth
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (isLoggedIn && currentUser != null) {
             navigateToMainMenu();
         } else {
+            // Якщо користувач вийшов, очищаємо преференси
+            if (currentUser == null) {
+                clearLoginPreferences();
+            }
             initializeFirebase();
         }
     }
+
+    private void clearLoginPreferences() {
+        SharedPreferences preferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        preferences.edit().clear().apply();
+    }
+
     private void navigateToMainMenu() {
         Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);
         startActivity(intent);

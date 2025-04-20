@@ -1,5 +1,8 @@
 package com.example.bookvoyager;
 
+
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -42,6 +45,9 @@ public class AccountActivity extends AppCompatActivity {
 
         Button changeEmailBtn = findViewById(R.id.changeEmail);
         changeEmailBtn.setOnClickListener(v -> showChangeEmailDialog());
+
+        Button exitBtn = findViewById(R.id.exit);
+        exitBtn.setOnClickListener(v -> signOut());
     }
 
     private void showChangeEmailDialog() {
@@ -63,6 +69,49 @@ public class AccountActivity extends AppCompatActivity {
 
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    private void signOut() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Підтвердження виходу")
+                .setMessage("Ви впевнені, що хочете вийти з акаунту?")
+                .setPositiveButton("Так", (dialog, id) -> {
+                    try {
+                        // 1. Виходимо з Firebase
+                        FirebaseAuth.getInstance().signOut();
+
+                        // 2. Очищаємо SharedPreferences
+                        clearLoginPreferences();
+
+                        // 3. Переходимо на LoginActivity
+                        navigateToLogin();
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Toast.makeText(AccountActivity.this,
+                                "Помилка при виході: " + e.getMessage(),
+                                Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("Ні", (dialog, id) -> dialog.dismiss())
+                .show();
+    }
+
+    private void clearLoginPreferences() {
+        SharedPreferences preferences = getSharedPreferences(LoginActivity.PREFS_NAME, MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.clear(); // Очищаємо всі збережені дані
+        editor.apply();
+    }
+
+    private void navigateToLogin() {
+        Intent intent = new Intent(AccountActivity.this, LoginActivity.class);
+
+        // Додаємо флаги для очистки стеку активностей
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+        startActivity(intent);
+        finishAffinity(); // Завершуємо всі активності
     }
 
     private void changeUserEmail(String newEmail, String password) {
