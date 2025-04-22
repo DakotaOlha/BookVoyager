@@ -10,11 +10,20 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 public class BookTimerFragment extends Fragment {
 
     private static final String ARG_TITLE = "title";
     private static final String ARG_PROGRESS = "progress";
     private static final String ARG_TIME_LOGGED = "time_logged";
+
+    private
+
+    private FirebaseAuth auth;
+    private FirebaseFirestore db;
+    private String currentUserId;
 
     public static BookTimerFragment newInstance(String title, String progress, String timeLogged) {
         BookTimerFragment fragment = new BookTimerFragment();
@@ -32,16 +41,25 @@ public class BookTimerFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_book_timer, container, false);
 
+        initializeFirebase();
+        getDataFromFirebase();
+
         TextView tvTitle = view.findViewById(R.id.tvBookTitle);
-        TextView tvProgress = view.findViewById(R.id.tvBookProgress);
-        TextView tvTimeLogged = view.findViewById(R.id.tvTimeLogged);
 
         if (getArguments() != null) {
             tvTitle.setText(getArguments().getString(ARG_TITLE));
-            tvProgress.setText(getArguments().getString(ARG_PROGRESS));
-            tvTimeLogged.setText(getArguments().getString(ARG_TIME_LOGGED));
         }
 
         return view;
+    }
+
+    private void initializeFirebase() {
+        auth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
+        currentUserId = auth.getCurrentUser() != null ? auth.getCurrentUser().getUid() : null;
+    }
+
+    private void getDataFromFirebase() {
+
     }
 }

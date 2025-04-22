@@ -89,10 +89,6 @@ public class SearchFragment extends Fragment {
     }
 
     private void addBookToUserLibrary(Book book) {
-        if (currentUserId == null) {
-            showToast("Будь ласка, увійдіть в систему");
-            return;
-        }
 
         Map<String, Object> bookData = new HashMap<>();
         bookData.put("title", book.getTitle());
@@ -116,6 +112,17 @@ public class SearchFragment extends Fragment {
                         showToast("Помилка при додаванні книги");
                     }
                 });
+
+        Map<String, Object> sessions = new HashMap<>();
+        sessions.put("title", book.getTitle());
+        sessions.put("pagesRead", 0);
+        sessions.put("pageCount", book.getPageCount());
+
+        db.collection("users")
+                .document(currentUserId)
+                .collection("readingSessions")
+                .document()
+                .set(sessions);
     }
 
     private void setupSearchButton(View view) {
