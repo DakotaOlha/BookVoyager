@@ -1,5 +1,6 @@
 package com.example.bookvoyager;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.core.view.ViewCompat;
@@ -11,6 +12,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,27 +29,25 @@ public class RewardsFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_rewards, container, false);
 
-//        ViewCompat.setOnApplyWindowInsetsListener(view.findViewById(R.id.main), (v, insets) -> {
-//            WindowInsetsCompat.Type type = WindowInsetsCompat.Type.systemBars();
-//            v.setPadding(
-//                    insets.getInsets(type).left,
-//                    insets.getInsets(type).top,
-//                    insets.getInsets(type).right,
-//                    insets.getInsets(type).bottom
-//            );
-//            return insets;
-//        });
-
         recyclerView = view.findViewById(R.id.rewardRecyclerView);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));
 
         rewards = new ArrayList<>();
         rewardAdapter = new RewardAdapter(rewards);
         recyclerView.setAdapter(rewardAdapter);
+        Button account_button = view.findViewById(R.id.account_button);
+        account_button.setOnClickListener(v -> navigateToAccountActivity());
+        TextView levelCount = view.findViewById(R.id.levelCount);
+        levelCount.setText("1");
 
         loadRewards();
 
         return view;
+    }
+
+    private void navigateToAccountActivity(){
+        Intent intent = new Intent(getActivity(), AccountActivity.class);
+        startActivity(intent);
     }
 
     private void loadRewards() {
