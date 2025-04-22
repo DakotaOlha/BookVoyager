@@ -1,6 +1,7 @@
 package com.example.bookvoyager;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import java.util.List;
 public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder> {
 
     private List<Book> books;
+    private Context context;
 
     public interface OnBookMenuClickListener {
         void onBookMenuClick(Book book, View anchorView);
