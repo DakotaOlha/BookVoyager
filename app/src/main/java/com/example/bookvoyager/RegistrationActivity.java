@@ -97,8 +97,9 @@ public class RegistrationActivity extends AppCompatActivity {
         userData.put("birth", birthDate);
         userData.put("registration_date", FieldValue.serverTimestamp());
         userData.put("uid", user.getUid());
-        userData.put("books", new ArrayList<>());
-        userData.put("settings", new HashMap<>());
+        userData.put("level", 0);
+        userData.put("xp", 0);
+        userData.put("booksRead", 0);
 
         db.collection("users")
                 .document(user.getUid())

@@ -24,10 +24,11 @@
             />
 
         <TextView
+            android:id="@+id/dialog_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:text="Редагувати книгу"
+            android:text="Edit the book"
             android:textColor="@color/BlackBlue"
             android:textSize="20sp" />
     </LinearLayout>
@@ -59,25 +60,25 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Завантажити обкладинку"/>
+                android:text="Download cover" />
 
             <EditText
                 android:id="@+id/edit_book_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Назва книги"
+                android:layout_marginTop="16dp"
+                android:hint="Book`s name"
                 android:textColor="@color/BlackBlue"
-                android:textColorHint="@color/LightBlue"
-                android:layout_marginTop="16dp" />
+                android:textColorHint="@color/LightBlue" />
 
             <EditText
                 android:id="@+id/edit_book_author"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Автор"
+                android:layout_marginTop="8dp"
+                android:hint="Authors"
                 android:textColor="@color/BlackBlue"
-                android:textColorHint="@color/LightBlue"
-                android:layout_marginTop="8dp" />
+                android:textColorHint="@color/LightBlue" />
 
             <EditText
                 android:id="@+id/edit_book_isbn"
@@ -93,20 +94,20 @@
                 android:id="@+id/edit_book_pages"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Кількість сторінок"
-                android:textColor="@color/BlackBlue"
-                android:textColorHint="@color/LightBlue"
                 android:layout_marginTop="8dp"
-                android:inputType="number" />
+                android:hint="Number of pages"
+                android:inputType="number"
+                android:textColor="@color/BlackBlue"
+                android:textColorHint="@color/LightBlue" />
 
             <EditText
                 android:id="@+id/edit_book_country"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Країна"
+                android:layout_marginTop="8dp"
+                android:hint="Country"
                 android:textColor="@color/BlackBlue"
-                android:textColorHint="@color/LightBlue"
-                android:layout_marginTop="8dp" />
+                android:textColorHint="@color/LightBlue" />
 
             <EditText
                 android:id="@+id/edit_book_description"
@@ -114,18 +115,18 @@
                 android:layout_height="120dp"
                 android:layout_marginTop="8dp"
                 android:gravity="top"
-                android:hint="Опис"
+                android:hint="Description"
+                android:inputType="textMultiLine"
                 android:textColor="@color/BlackBlue"
-                android:textColorHint="@color/LightBlue"
-                android:inputType="textMultiLine" />
+                android:textColorHint="@color/LightBlue" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/button_save"
                 style="@style/BrownButtonStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Зберегти"
-                android:layout_marginTop="16dp" />
+                android:layout_marginTop="16dp"
+                android:text="Save" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

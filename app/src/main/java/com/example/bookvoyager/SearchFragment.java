@@ -1,5 +1,6 @@
 package com.example.bookvoyager;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -71,6 +73,13 @@ public class SearchFragment extends Fragment {
     private void initializeViews(View view) {
         recyclerView = view.findViewById(R.id.bookRecyclerView);
         searchEditText = view.findViewById(R.id.findNewBook);
+        Button account_button = view.findViewById(R.id.account_button);
+        account_button.setOnClickListener(v -> navigateToAccountActivity());
+    }
+
+    private void navigateToAccountActivity(){
+        Intent intent = new Intent(getActivity(), AccountActivity.class);
+        startActivity(intent);
     }
 
     private void setupRecyclerView() {

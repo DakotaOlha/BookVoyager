@@ -96,7 +96,7 @@ public class MyBooksFragment extends Fragment {
                             .addOnSuccessListener(queryDocumentSnapshots -> {
                                 if (!queryDocumentSnapshots.isEmpty()) {
                                     String docId = queryDocumentSnapshots.getDocuments().get(0).getId();
-                                    new EditBookDialogFragment(book, docId, this::loadUserBooks)
+                                    new EditBookDialogFragment(book, docId, this::loadUserBooks, "Edit the book", "edit")
                                             .show(getParentFragmentManager(), "EditBook");
                                 }
                             });
@@ -108,6 +108,22 @@ public class MyBooksFragment extends Fragment {
                 return false;
             });
             popup.show();
+        });
+    }
+
+    private void clickOnBookCover() {
+        bookAdapter.setOnBookClickListener(book -> {
+            ReadingFragment fragment = ReadingFragment.newInstance(
+                    book.getTitle(),
+                    book.getAuthor(),
+                    book.getDescription()
+            );
+
+            requireActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_container, fragment)
+                    .addToBackStack(null)
+                    .commit();
         });
     }
 
@@ -206,7 +222,7 @@ public class MyBooksFragment extends Fragment {
 //        bookAdapter.FilterList(filteredBooks);
     }
 
-    private void loadUserBooks(){
+    public void loadUserBooks(){
         db.collection("users")
                 .document(currentUserId)
                 .collection("books")

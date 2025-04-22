@@ -98,7 +98,17 @@ public class MainMenuActivity extends AppCompatActivity {
             popupWindow.dismiss();
         });
         popupView.findViewById(R.id.add_manually).setOnClickListener(v -> {
-            Toast.makeText(this, "Add manually selected", Toast.LENGTH_SHORT).show();
+            Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.frame_layout);
+
+            if (currentFragment instanceof MyBooksFragment) {
+                MyBooksFragment myBooksFragment = (MyBooksFragment) currentFragment;
+
+                new EditBookDialogFragment(null, null, myBooksFragment::loadUserBooks, "Add the book", "add")
+                        .show(getSupportFragmentManager(), "EditBook");
+            } else {
+                replaceFragment(new MyBooksFragment());
+                Toast.makeText(this, "Перехід на вкладку 'Мої книги' для додавання", Toast.LENGTH_SHORT).show();
+            }
             popupWindow.dismiss();
         });
         popupView.findViewById(R.id.add_by_photo).setOnClickListener(v -> {
@@ -145,18 +155,4 @@ public class MainMenuActivity extends AppCompatActivity {
         fragmentTransaction.replace(R.id.frame_layout, fragment);
         fragmentTransaction.commit();
     }
-
-//    private void fullScreen(){
-//        Window window = getWindow();
-//        WindowCompat.setDecorFitsSystemWindows(window, false);
-//        window.setStatusBarColor(Color.TRANSPARENT);
-//
-//
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-//            window.setDecorFitsSystemWindows(false);
-//        } else {
-//            window.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-//                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-//        }
-//    }
 }
