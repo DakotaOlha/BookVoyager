@@ -3,23 +3,31 @@ package com.example.bookvoyager;
 public class Book {
     private String ISBN;
     private String title;
-    private String author;
+    private String authors;
     private int pageCount;
     private String coverUrl;
     private String description;
     private String country;
 
+    public Book(){
+        this.ISBN = "";
+        this.title = "";
+        this.authors = "";
+        this.pageCount = 0;
+        this.description = "";
+        this.country = "";
+    }
 
-    public Book(String title, String author, String coverUrl) {
+    public Book(String title, String authors, String coverUrl) {
         this.title = title;
-        this.author = author;
+        this.authors = authors;
         this.coverUrl = coverUrl;
     }
 
-    public Book(String ISBN, String title, String author, String coverUrl) {
+    public Book(String ISBN, String title, String authors, String coverUrl) {
         this.ISBN = ISBN;
         this.title = title;
-        this.author = author;
+        this.authors = authors;
         this.coverUrl = coverUrl;
     }
 
@@ -28,7 +36,7 @@ public class Book {
     }
 
     public String getAuthor() {
-        return author;
+        return authors;
     }
 
     public String getCoverUrl() {
@@ -60,7 +68,7 @@ public class Book {
     }
 
     public void setAuthor(String author) {
-        this.author = author;
+        this.authors = author;
     }
 
     public void setPageCount(int pageCount) {
