@@ -11,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
@@ -20,7 +21,7 @@ import java.util.List;
 public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder> {
 
     private List<Book> books;
-    private Context context;
+    private FragmentManager fragmentManager;
 
     public interface OnBookMenuClickListener {
         void onBookMenuClick(Book book, View anchorView);
@@ -28,12 +29,22 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
 
     private OnBookMenuClickListener menuClickListener;
 
+    public interface OnBookClickListener {
+        void onBookClick(Book book);
+    }
+    private OnBookClickListener bookClickListener;
+
+    public void setOnBookClickListener(OnBookClickListener listener) {
+        this.bookClickListener = listener;
+    }
+
     public void setOnBookMenuClickListener(OnBookMenuClickListener listener) {
         this.menuClickListener = listener;
     }
 
-    public BookAdapter(List<Book> books) {
+    public BookAdapter(List<Book> books, FragmentManager fragmentManager) {
         this.books = books;
+        this.fragmentManager = fragmentManager;
     }
 
     public void FilterList(List<Book> filteredList){
@@ -92,6 +103,19 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
             if (menuClickListener != null) {
                 menuClickListener.onBookMenuClick(book, holder.bookMenu);
             }
+        });
+
+        holder.bookCover.setOnClickListener(v -> {
+            BookTimerFragment fragment = BookTimerFragment.newInstance(
+                    book.getTitle(),
+                    "37%",
+                    "Записилось 19 годин! 48 хвилин"
+            );
+
+            fragmentManager.beginTransaction()
+                    .replace(R.id.frame_layout, fragment)
+                    .addToBackStack(null)
+                    .commit();
         });
     }
 

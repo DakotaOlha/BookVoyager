@@ -39,7 +39,7 @@ public class ReadingFragment extends Fragment {
         if (getArguments() != null) {
             titleView.setText(getArguments().getString(ARG_TITLE));
             authorView.setText(getArguments().getString(ARG_AUTHOR));
-            contentView.setText(getArguments().getString(ARG_DESCRIPTION)); // Поки що замість контенту – опис
+            contentView.setText(getArguments().getString(ARG_DESCRIPTION));
         }
 
         return view;

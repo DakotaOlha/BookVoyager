@@ -78,7 +78,7 @@ public class MyBooksFragment extends Fragment {
     private void setupRecyclerView(View view) {
         recyclerView = view.findViewById(R.id.bookRecyclerView);
         recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
-        bookAdapter = new BookAdapter(books);
+        bookAdapter = new BookAdapter(books, getParentFragmentManager());
         recyclerView.setAdapter(bookAdapter);
     }
 
@@ -108,22 +108,6 @@ public class MyBooksFragment extends Fragment {
                 return false;
             });
             popup.show();
-        });
-    }
-
-    private void clickOnBookCover() {
-        bookAdapter.setOnBookClickListener(book -> {
-            ReadingFragment fragment = ReadingFragment.newInstance(
-                    book.getTitle(),
-                    book.getAuthor(),
-                    book.getDescription()
-            );
-
-            requireActivity().getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.fragment_container, fragment)
-                    .addToBackStack(null)
-                    .commit();
         });
     }
 
