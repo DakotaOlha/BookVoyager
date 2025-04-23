@@ -313,7 +313,7 @@ public class BookTimerFragment extends Fragment {
     private void saveReadingProgress(int currentPage) {
 //        if (readingSessions == null || currentUserId == null) return;
 //
-//        // Update pages read if current page is greater than previous
+//        // Update pages read if current page it.svg greater than previous
 //        if (currentPage > readingSessions.getPagesRead()) {
 //            readingSessions.setPagesRead(currentPage);
 //

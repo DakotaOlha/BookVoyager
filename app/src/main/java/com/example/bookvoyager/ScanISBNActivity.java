@@ -59,7 +59,7 @@ public class ScanISBNActivity extends AppCompatActivity {
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             startScanner();
         } else {
-            Toast.makeText(this, "Camera permission is required", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Camera permission it.svg required", Toast.LENGTH_SHORT).show();
             finish();
         }
     }
