@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -123,6 +124,40 @@ public class SearchFragment extends Fragment {
                 .collection("readingSessions")
                 .document()
                 .set(sessions);
+
+        db.collection("users")
+                .document(currentUserId)
+                .collection("locationSpot")
+                .whereEqualTo("locationId", book.getCountry())
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                        // Якщо документ з такою країною вже існує
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            long currentCount = document.getLong("countRequiredBooks") != null
+                                    ? document.getLong("countRequiredBooks")
+                                    : 0;
+
+                            db.collection("users")
+                                    .document(currentUserId)
+                                    .collection("locationSpot")
+                                    .document(document.getId())
+                                    .update("countRequiredBooks", currentCount + 1);
+                        }
+                    } else {
+                        // Якщо документ з такою країною ще не існує
+                        Map<String, Object> countryData = new HashMap<>();
+                        countryData.put("locationId", book.getCountry());
+                        countryData.put("countRequiredBooks", 1);
+                        countryData.put("ifUnlocked", true);
+
+                        db.collection("users")
+                                .document(currentUserId)
+                                .collection("locationSpot")
+                                .document()
+                                .set(countryData);
+                    }
+                });
     }
 
     private void setupSearchButton(View view) {
