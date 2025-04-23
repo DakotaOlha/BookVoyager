@@ -116,7 +116,7 @@ public class SearchFragment extends Fragment {
         Map<String, Object> sessions = new HashMap<>();
         sessions.put("title", book.getTitle());
         sessions.put("pagesRead", 0);
-        sessions.put("pageCount", book.getPageCount());
+        sessions.put("pagesCount", book.getPageCount());
 
         db.collection("users")
                 .document(currentUserId)

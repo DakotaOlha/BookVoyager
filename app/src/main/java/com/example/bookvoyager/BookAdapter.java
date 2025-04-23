@@ -108,8 +108,7 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
         holder.bookCover.setOnClickListener(v -> {
             BookTimerFragment fragment = BookTimerFragment.newInstance(
                     book.getTitle(),
-                    "37%",
-                    "Записилось 19 годин! 48 хвилин"
+                    book.getCoverUrl()
             );
 
             fragmentManager.beginTransaction()

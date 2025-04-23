@@ -37,7 +37,7 @@
         android:id="@+id/tvBookPercent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="37%"
+        android:text="0%"
         android:textSize="25dp"
         android:textColor="@color/BlackBrown"
         android:layout_marginTop="5dp"/>
@@ -66,6 +66,42 @@
         android:background="@drawable/round_play_button"
         app:strokeColor="@color/BlackBlue"
         app:strokeWidth="3dp"/>
+
+    <TextView
+        android:id="@+id/readingTimer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="00:00:00"
+        android:visibility="gone"
+        android:textSize="20dp"
+        android:textColor="@color/BlackBrown"/>
+
+    <LinearLayout
+        android:id="@+id/pauseButtonsLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+
+        android:layout_marginTop="10dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/continueButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Продовжити"
+            android:visibility="gone"
+            android:layout_marginEnd="8dp"
+            app:backgroundTint="@color/LightBlue"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/finishButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Завершити"
+            android:visibility="gone"
+            app:backgroundTint="@color/BlackBlue"/>
+    </LinearLayout>
 
     <View
         android:layout_width="match_parent"
