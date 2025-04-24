@@ -26,6 +26,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -228,6 +229,67 @@ public class EditBookDialogFragment extends DialogFragment {
                 .addOnFailureListener(e -> {
                     Toast.makeText(getContext(), "Помилка при оновленні", Toast.LENGTH_SHORT).show();
                 });
+
+        if (!book.getCountry().equals(country)) {
+            // Зменшуємо countRequiredBooks для старої країни
+            db.collection("users")
+                    .document(userId)
+                    .collection("locationSpot")
+                    .whereEqualTo("locationId", book.getCountry())
+                    .get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Long currentCount = document.getLong("countRequiredBooks");
+                                if (currentCount != null && currentCount > 1) {
+                                    db.collection("users")
+                                            .document(userId)
+                                            .collection("locationSpot")
+                                            .document(document.getId())
+                                            .update("countRequiredBooks", currentCount - 1);
+                                } else {
+                                    db.collection("users")
+                                            .document(userId)
+                                            .collection("locationSpot")
+                                            .document(document.getId())
+                                            .delete();
+                                }
+                            }
+                        }
+                    });
+
+            db.collection("users")
+                    .document(userId)
+                    .collection("locationSpot")
+                    .whereEqualTo("locationId", country)
+                    .get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                long currentCount = document.getLong("countRequiredBooks") != null
+                                        ? document.getLong("countRequiredBooks")
+                                        : 0;
+
+                                db.collection("users")
+                                        .document(userId)
+                                        .collection("locationSpot")
+                                        .document(document.getId())
+                                        .update("countRequiredBooks", currentCount + 1);
+                            }
+                        } else {
+                            Map<String, Object> countryData = new HashMap<>();
+                            countryData.put("locationId", country);
+                            countryData.put("countRequiredBooks", 1);
+                            countryData.put("ifUnlocked", true);
+
+                            db.collection("users")
+                                    .document(userId)
+                                    .collection("locationSpot")
+                                    .document()
+                                    .set(countryData);
+                        }
+                    });
+        }
     }
 
     private void saveNewBookToFirestore(String title, String authors, String isbn, int pages,
@@ -255,6 +317,49 @@ public class EditBookDialogFragment extends DialogFragment {
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(getContext(), "Помилка при додаванні", Toast.LENGTH_SHORT).show());
+
+        Map<String, Object> sessions = new HashMap<>();
+        sessions.put("title", title);
+        sessions.put("pagesRead", 0);
+        sessions.put("pagesCount", pages);
+
+        db.collection("users")
+                .document(userId)
+                .collection("readingSessions")
+                .document()
+                .set(sessions);
+
+        db.collection("users")
+                .document(userId)
+                .collection("locationSpot")
+                .whereEqualTo("locationId", country)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            long currentCount = document.getLong("countRequiredBooks") != null
+                                    ? document.getLong("countRequiredBooks")
+                                    : 0;
+
+                            db.collection("users")
+                                    .document(userId)
+                                    .collection("locationSpot")
+                                    .document(document.getId())
+                                    .update("countRequiredBooks", currentCount + 1);
+                        }
+                    } else {
+                        Map<String, Object> countryData = new HashMap<>();
+                        countryData.put("locationId", country);
+                        countryData.put("countRequiredBooks", 1);
+                        countryData.put("ifUnlocked", true);
+
+                        db.collection("users")
+                                .document(userId)
+                                .collection("locationSpot")
+                                .document()
+                                .set(countryData);
+                    }
+                });
     }
 
     @Override

@@ -132,7 +132,6 @@ public class SearchFragment extends Fragment {
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && !task.getResult().isEmpty()) {
-                        // Якщо документ з такою країною вже існує
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             long currentCount = document.getLong("countRequiredBooks") != null
                                     ? document.getLong("countRequiredBooks")
@@ -145,7 +144,6 @@ public class SearchFragment extends Fragment {
                                     .update("countRequiredBooks", currentCount + 1);
                         }
                     } else {
-                        // Якщо документ з такою країною ще не існує
                         Map<String, Object> countryData = new HashMap<>();
                         countryData.put("locationId", book.getCountry());
                         countryData.put("countRequiredBooks", 1);

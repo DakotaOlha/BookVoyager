@@ -18,6 +18,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
@@ -29,6 +30,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 public class ScanISBNActivity extends AppCompatActivity {
@@ -202,6 +204,49 @@ public class ScanISBNActivity extends AppCompatActivity {
                     Toast.makeText(this, "Failed to add book: " + e.getMessage(), Toast.LENGTH_LONG).show();
                     e.printStackTrace();
                     finish();
+                });
+
+        Map<String, Object> sessions = new HashMap<>();
+        sessions.put("title", title);
+        sessions.put("pagesRead", 0);
+        sessions.put("pagesCount", pageCount);
+
+        db.collection("users")
+                .document(userId)
+                .collection("readingSessions")
+                .document()
+                .set(sessions);
+
+        db.collection("users")
+                .document(userId)
+                .collection("locationSpot")
+                .whereEqualTo("locationId", country)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            long currentCount = document.getLong("countRequiredBooks") != null
+                                    ? document.getLong("countRequiredBooks")
+                                    : 0;
+
+                            db.collection("users")
+                                    .document(userId)
+                                    .collection("locationSpot")
+                                    .document(document.getId())
+                                    .update("countRequiredBooks", currentCount + 1);
+                        }
+                    } else {
+                        Map<String, Object> countryData = new HashMap<>();
+                        countryData.put("locationId", country);
+                        countryData.put("countRequiredBooks", 1);
+                        countryData.put("ifUnlocked", true);
+
+                        db.collection("users")
+                                .document(userId)
+                                .collection("locationSpot")
+                                .document()
+                                .set(countryData);
+                    }
                 });
     }
 }
