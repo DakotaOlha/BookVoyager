@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -32,8 +34,6 @@ import java.util.Locale;
 public class BookTimerFragment extends Fragment {
 
     private static final String ARG_TITLE = "title";
-    private static final String ARG_PROGRESS = "progress";
-    private static final String ARG_TIME_LOGGED = "time_logged";
 
     ReadingSessions readingSessions = null;
     private int percent = 80;
@@ -58,8 +58,6 @@ public class BookTimerFragment extends Fragment {
         BookTimerFragment fragment = new BookTimerFragment();
         Bundle args = new Bundle();
         args.putString(ARG_TITLE, title);
-//        args.putString(ARG_PROGRESS, progress);
-//        args.putString(ARG_TIME_LOGGED, timeLogged);
         args.putString("coverUrl", coverUrl);
         fragment.setArguments(args);
         return fragment;
@@ -135,6 +133,10 @@ public class BookTimerFragment extends Fragment {
                 handler.postDelayed(this, 1000);
             }
         };
+
+        TableLayout tableLayout = view.findViewById(R.id.statsTable);
+        addStatsRow(tableLayout, "5 березня", "21 сторінка");
+        addStatsRow(tableLayout, "2.15%", "31 сторінка на годину");
 
         getDataFromFirebase();
         return view;
@@ -256,13 +258,11 @@ public class BookTimerFragment extends Fragment {
                 int currentPage = Integer.parseInt(pageStr);
                 //saveReadingProgress(currentPage, elapsedTime);
             }
-            // Скидаємо секундомір після збереження
             elapsedTime = 0;
             updateTimerText(0);
         });
         builder.setNegativeButton("Скасувати", (dialog, which) -> {
             dialog.cancel();
-            // Скидаємо секундомір, якщо користувач скасував
             elapsedTime = 0;
             updateTimerText(0);
         });
@@ -384,6 +384,21 @@ public class BookTimerFragment extends Fragment {
             tvBookProgressBar.setProgress(percent);
         }
 
+    }
+
+    private void addStatsRow(TableLayout table, String leftText, String rightText) {
+        TableRow row = new TableRow(getContext());
+
+        TextView leftView = new TextView(getContext());
+        leftView.setText(leftText);
+        row.addView(leftView);
+
+        TextView rightView = new TextView(getContext());
+        rightView.setText(rightText);
+        rightView.setPadding(16, 0, 0, 0);
+        row.addView(rightView);
+
+        table.addView(row);
     }
 
     @Override

@@ -100,7 +100,7 @@
             android:layout_height="wrap_content"
             android:text="Завершити"
             android:visibility="gone"
-            app:backgroundTint="@color/BlackBlue"/>
+            app:backgroundTint="@color/BlackBrown"/>
     </LinearLayout>
 
     <View
@@ -112,38 +112,16 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Щоденник"
+        android:text="Diary of records"
         android:textSize="18sp"
         android:textStyle="bold"/>
 
     <TableLayout
+        android:id="@+id/statsTable"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp">
-
-        <TableRow>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="5 березня"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:text="21 сторінка"/>
-        </TableRow>
-
-        <TableRow>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="2.15%"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:text="31 сторінка на годину"/>
-        </TableRow>
+        android:layout_marginTop="8dp"
+        android:stretchColumns="*">
     </TableLayout>
 
 </LinearLayout>
