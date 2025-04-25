@@ -1,6 +1,7 @@
 
 package com.example.bookvoyager;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
+import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -82,13 +84,20 @@ public class MyBooksFragment extends Fragment {
         recyclerView.setAdapter(bookAdapter);
     }
 
-    private void clickOnMoreDots(){
+    @SuppressLint({"MissingInflatedId", "ClickableViewAccessibility"})
+    private void clickOnMoreDots(View view){
         bookAdapter.setOnBookMenuClickListener((book, anchorView) -> {
-            PopupMenu popup = new PopupMenu(requireContext(), anchorView);
-            popup.getMenuInflater().inflate(R.menu.book_popup_menu, popup.getMenu());
-            popup.setOnMenuItemClickListener(item -> {
-                if (item.getItemId() == R.id.menu_edit) {
-                    db.collection("users")
+            View popupView = LayoutInflater.from(getActivity()).inflate(R.layout.custom_dots_menu, null);
+
+            PopupWindow popupWindow = new PopupWindow(popupView,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    true);
+
+            popupWindow.setElevation(20f);
+
+            popupView.findViewById(R.id.menu_edit).setOnClickListener(v -> {
+                db.collection("users")
                             .document(currentUserId)
                             .collection("books")
                             .whereEqualTo("title", book.getTitle())
@@ -100,14 +109,20 @@ public class MyBooksFragment extends Fragment {
                                             .show(getParentFragmentManager(), "EditBook");
                                 }
                             });
-                    return true;
-                } else if (item.getItemId() == R.id.menu_del) {
-                    deleteBookFromFirestore(book);
-                    return true;
-                }
-                return false;
+                popupWindow.dismiss();
             });
-            popup.show();
+
+            popupView.findViewById(R.id.menu_del).setOnClickListener(v -> {
+                deleteBookFromFirestore(book);
+                popupWindow.dismiss();
+            });
+
+            popupView.setOnTouchListener((v, event) -> {
+                popupWindow.dismiss();
+                return true;
+            });
+
+            popupWindow.showAsDropDown(anchorView);
         });
     }
 
@@ -120,7 +135,7 @@ public class MyBooksFragment extends Fragment {
 
         ifReadButton.setOnClickListener(v ->  toggleReadingFilter(v));
 
-        clickOnMoreDots();
+        clickOnMoreDots(view);
     }
 
     private void filterBooksBySearchQuery(){

@@ -22,9 +22,11 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import com.bumptech.glide.Glide;
+import com.example.bookvoyager.firebase.BookLibraryManager;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
@@ -55,6 +57,8 @@ public class EditBookDialogFragment extends DialogFragment {
     Button saveButton, uploadButton;
     ImageButton backButton;
 
+    BookLibraryManager bookLibraryManager;
+
     public EditBookDialogFragment(Book book, String documentId, OnBookUpdatedListener listener, String dialogTitle, String mode) {
         this.book = book;
         this.documentId = documentId;
@@ -69,12 +73,17 @@ public class EditBookDialogFragment extends DialogFragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.dialog_edit_book, container, false);
+        initializeFirebase();
         initializeViews(view);
         loadExistingCover();
         setTextForEditText();
         setupEventListeners();
 
         return view;
+    }
+
+    private void initializeFirebase() {
+        bookLibraryManager = new BookLibraryManager(getContext());
     }
 
     private void setupEventListeners() {
@@ -294,72 +303,25 @@ public class EditBookDialogFragment extends DialogFragment {
 
     private void saveNewBookToFirestore(String title, String authors, String isbn, int pages,
                                         String country, String description, String coverUrl) {
-        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        Map<String, Object> bookData = new HashMap<>();
-        bookData.put("title", title);
-        bookData.put("authors", authors);
-        bookData.put("isbn", isbn);
-        bookData.put("pageCount", pages);
-        bookData.put("country", country);
-        bookData.put("description", description);
-        bookData.put("coverUrl", coverUrl);
+        Book book = new Book(isbn, title, authors, coverUrl);
+        book.setCountry(country);
+        book.setPageCount(pages);
+        book.setDescription(description);
 
-        db.collection("users")
-                .document(userId)
-                .collection("books")
-                .add(bookData)
-                .addOnSuccessListener(documentReference -> {
-                    Toast.makeText(getContext(), "Книгу додано", Toast.LENGTH_SHORT).show();
-                    listener.onBookUpdated();
-                    dismiss();
-                })
-                .addOnFailureListener(e ->
-                        Toast.makeText(getContext(), "Помилка при додаванні", Toast.LENGTH_SHORT).show());
+        bookLibraryManager.saveNewBookToFirestore(book, new BookLibraryManager.AddBookCallback() {
+            @Override
+            public void onSuccess() {
+                Toast.makeText(getContext(), "Книгу додано", Toast.LENGTH_SHORT).show();
+                listener.onBookUpdated();
+                dismiss();
+            }
 
-        Map<String, Object> sessions = new HashMap<>();
-        sessions.put("title", title);
-        sessions.put("pagesRead", 0);
-        sessions.put("pagesCount", pages);
-
-        db.collection("users")
-                .document(userId)
-                .collection("readingSessions")
-                .document()
-                .set(sessions);
-
-        db.collection("users")
-                .document(userId)
-                .collection("locationSpot")
-                .whereEqualTo("locationId", country)
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful() && !task.getResult().isEmpty()) {
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            long currentCount = document.getLong("countRequiredBooks") != null
-                                    ? document.getLong("countRequiredBooks")
-                                    : 0;
-
-                            db.collection("users")
-                                    .document(userId)
-                                    .collection("locationSpot")
-                                    .document(document.getId())
-                                    .update("countRequiredBooks", currentCount + 1);
-                        }
-                    } else {
-                        Map<String, Object> countryData = new HashMap<>();
-                        countryData.put("locationId", country);
-                        countryData.put("countRequiredBooks", 1);
-                        countryData.put("ifUnlocked", true);
-
-                        db.collection("users")
-                                .document(userId)
-                                .collection("locationSpot")
-                                .document()
-                                .set(countryData);
-                    }
-                });
+            @Override
+            public void onFailure(String errorMessage) {
+                Toast.makeText(getContext(), "Помилка при додаванні", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override

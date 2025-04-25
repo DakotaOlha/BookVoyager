@@ -17,6 +17,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.bookvoyager.firebase.BookLibraryManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -45,9 +46,7 @@ public class SearchFragment extends Fragment {
     private EditText searchEditText;
     private SearchBookAdapter bookAdapter;
 
-    private FirebaseAuth auth;
-    private FirebaseFirestore db;
-    private String currentUserId;
+    private BookLibraryManager bookLibraryManager;
 
     private final List<Book> books = new ArrayList<>();
 
@@ -66,9 +65,7 @@ public class SearchFragment extends Fragment {
     }
 
     private void initializeFirebase() {
-        auth = FirebaseAuth.getInstance();
-        db = FirebaseFirestore.getInstance();
-        currentUserId = auth.getCurrentUser() != null ? auth.getCurrentUser().getUid() : null;
+       bookLibraryManager = new BookLibraryManager(getActivity());
     }
 
     private void initializeViews(View view) {
@@ -91,71 +88,83 @@ public class SearchFragment extends Fragment {
 
     private void addBookToUserLibrary(Book book) {
 
-        Map<String, Object> bookData = new HashMap<>();
-        bookData.put("title", book.getTitle());
-        bookData.put("authors", book.getAuthor());
-        bookData.put("coverUrl", book.getCoverUrl());
-        bookData.put("pageCount", book.getPageCount());
-        bookData.put("description", book.getDescription());
-        bookData.put("country", book.getCountry());
-        bookData.put("addedDate", FieldValue.serverTimestamp());
-        bookData.put("isbn", book.getISBN());
+        bookLibraryManager.addBookToUserLibrary(book, new BookLibraryManager.AddBookCallback() {
+            @Override
+            public void onSuccess() {
+                showToast("Книгу додано до бібліотеки");
+            }
 
-        db.collection("users")
-                .document(currentUserId)
-                .collection("books")
-                .document() // автоматичний ID
-                .set(bookData)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        showToast("Книгу додано до бібліотеки");
-                    } else {
-                        showToast("Помилка при додаванні книги");
-                    }
-                });
-
-        Map<String, Object> sessions = new HashMap<>();
-        sessions.put("title", book.getTitle());
-        sessions.put("pagesRead", 0);
-        sessions.put("pagesCount", book.getPageCount());
-
-        db.collection("users")
-                .document(currentUserId)
-                .collection("readingSessions")
-                .document()
-                .set(sessions);
-
-        db.collection("users")
-                .document(currentUserId)
-                .collection("locationSpot")
-                .whereEqualTo("locationId", book.getCountry())
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful() && !task.getResult().isEmpty()) {
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            long currentCount = document.getLong("countRequiredBooks") != null
-                                    ? document.getLong("countRequiredBooks")
-                                    : 0;
-
-                            db.collection("users")
-                                    .document(currentUserId)
-                                    .collection("locationSpot")
-                                    .document(document.getId())
-                                    .update("countRequiredBooks", currentCount + 1);
-                        }
-                    } else {
-                        Map<String, Object> countryData = new HashMap<>();
-                        countryData.put("locationId", book.getCountry());
-                        countryData.put("countRequiredBooks", 1);
-                        countryData.put("ifUnlocked", true);
-
-                        db.collection("users")
-                                .document(currentUserId)
-                                .collection("locationSpot")
-                                .document()
-                                .set(countryData);
-                    }
-                });
+            @Override
+            public void onFailure(String errorMessage) {
+                showToast("Помилка при додаванні книги");
+            }
+        });
+//
+//        Map<String, Object> bookData = new HashMap<>();
+//        bookData.put("title", book.getTitle());
+//        bookData.put("authors", book.getAuthor());
+//        bookData.put("coverUrl", book.getCoverUrl());
+//        bookData.put("pageCount", book.getPageCount());
+//        bookData.put("description", book.getDescription());
+//        bookData.put("country", book.getCountry());
+//        bookData.put("addedDate", FieldValue.serverTimestamp());
+//        bookData.put("isbn", book.getISBN());
+//
+//        db.collection("users")
+//                .document(currentUserId)
+//                .collection("books")
+//                .document() // автоматичний ID
+//                .set(bookData)
+//                .addOnCompleteListener(task -> {
+//                    if (task.isSuccessful()) {
+//                        showToast("Книгу додано до бібліотеки");
+//                    } else {
+//                        showToast("Помилка при додаванні книги");
+//                    }
+//                });
+//
+//        Map<String, Object> sessions = new HashMap<>();
+//        sessions.put("title", book.getTitle());
+//        sessions.put("pagesRead", 0);
+//        sessions.put("pagesCount", book.getPageCount());
+//
+//        db.collection("users")
+//                .document(currentUserId)
+//                .collection("readingSessions")
+//                .document()
+//                .set(sessions);
+//
+//        db.collection("users")
+//                .document(currentUserId)
+//                .collection("locationSpot")
+//                .whereEqualTo("locationId", book.getCountry())
+//                .get()
+//                .addOnCompleteListener(task -> {
+//                    if (task.isSuccessful() && !task.getResult().isEmpty()) {
+//                        for (QueryDocumentSnapshot document : task.getResult()) {
+//                            long currentCount = document.getLong("countRequiredBooks") != null
+//                                    ? document.getLong("countRequiredBooks")
+//                                    : 0;
+//
+//                            db.collection("users")
+//                                    .document(currentUserId)
+//                                    .collection("locationSpot")
+//                                    .document(document.getId())
+//                                    .update("countRequiredBooks", currentCount + 1);
+//                        }
+//                    } else {
+//                        Map<String, Object> countryData = new HashMap<>();
+//                        countryData.put("locationId", book.getCountry());
+//                        countryData.put("countRequiredBooks", 1);
+//                        countryData.put("ifUnlocked", true);
+//
+//                        db.collection("users")
+//                                .document(currentUserId)
+//                                .collection("locationSpot")
+//                                .document()
+//                                .set(countryData);
+//                    }
+//                });
     }
 
     private void setupSearchButton(View view) {
