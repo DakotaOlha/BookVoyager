@@ -1,31 +1,17 @@
 package com.example.bookvoyager;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FieldValue;
-import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import com.example.bookvoyager.firebase.AuthRepository;
 
 public class RegistrationActivity extends AppCompatActivity {
 
@@ -40,8 +26,7 @@ public class RegistrationActivity extends AppCompatActivity {
     private EditText dayEditText;
     private EditText monthEditText;
     private EditText yearEditText;
-    private FirebaseAuth auth;
-    private FirebaseFirestore db;
+    private AuthRepository authRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,54 +59,20 @@ public class RegistrationActivity extends AppCompatActivity {
     }
 
     private void registerUser(String email, String password, String nickname, String day, String month, String year) {
-        auth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, task -> {
-                    if (task.isSuccessful()) {
-                        FirebaseUser user = auth.getCurrentUser();
-                        if (user != null) {
-                            saveUserData(user, email, nickname, day, month, year);
-                        }
-                    } else {
-                        showRegistrationError(Objects.requireNonNull(task.getException()).getMessage());
-                    }
-                });
-    }
-
-    private void saveUserData(FirebaseUser user, String email, String nickname,
-                              String day, String month, String year) {
         String birthDate = day + "-" + month + "-" + year;
 
-        Map<String, Object> userData = new HashMap<>();
-        userData.put("nickname", nickname);
-        userData.put("email", email);
-        userData.put("birth", birthDate);
-        userData.put("registration_date", FieldValue.serverTimestamp());
-        userData.put("uid", user.getUid());
-        userData.put("level", 0);
-        userData.put("xp", 0);
-        userData.put("booksRead", 0);
+        authRepository.registerUser(email, password, nickname, birthDate, new AuthRepository.RegistrationCallback() {
+            @Override
+            public void onSuccess() {
+                navigateToMainMenu();
+                showSuccessMessage();
+            }
 
-        db.collection("users")
-                .document(user.getUid())
-                .set(userData)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        saveLoginPreferences(user, email);
-                        navigateToMainMenu();
-                        showSuccessMessage();
-                    } else {
-                        showDatabaseError();
-                    }
-                });
-    }
-
-    private void saveLoginPreferences(FirebaseUser user, String email) {
-        SharedPreferences preferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        preferences.edit()
-                .putBoolean(KEY_IS_LOGGED_IN, true)
-                .putString(KEY_EMAIL, email)
-                .putString(KEY_UID, user.getUid())
-                .apply();
+            @Override
+            public void onFailure(String errorMessage) {
+                showRegistrationError(errorMessage);
+            }
+        });
     }
 
     private void navigateToMainMenu() {
@@ -171,8 +122,7 @@ public class RegistrationActivity extends AppCompatActivity {
     }
 
     private void initializeFirebase() {
-        auth = FirebaseAuth.getInstance();
-        db = FirebaseFirestore.getInstance();
+        authRepository = new AuthRepository(this);
     }
 
     private void setupFullScreen(){

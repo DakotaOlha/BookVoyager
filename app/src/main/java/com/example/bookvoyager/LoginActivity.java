@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -12,12 +11,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
+import com.example.bookvoyager.firebase.AuthRepository;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -28,7 +24,7 @@ public class LoginActivity extends AppCompatActivity {
     private static final String KEY_IS_LOGGED_IN = "isLoggedIn";
     private static final String KEY_EMAIL = "email";
 
-    private FirebaseAuth auth;
+    private AuthRepository authRepository;
 
     private EditText emailEditText, passwordEditText;
     private TextView registrationLink;
@@ -75,13 +71,11 @@ public class LoginActivity extends AppCompatActivity {
         SharedPreferences preferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         boolean isLoggedIn = preferences.getBoolean(KEY_IS_LOGGED_IN, false);
 
-        // Додаємо перевірку Firebase Auth
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         if (isLoggedIn && currentUser != null) {
             navigateToMainMenu();
         } else {
-            // Якщо користувач вийшов, очищаємо преференси
             if (currentUser == null) {
                 clearLoginPreferences();
             }
@@ -101,7 +95,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void initializeFirebase() {
-        auth = FirebaseAuth.getInstance();
+        authRepository = new AuthRepository(this);
     }
 
     private void handleLogin() {
@@ -128,31 +122,21 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void authenticateUser(String email, String password) {
-        auth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, task -> {
-                    if (task.isSuccessful()) {
-                        saveLoginStatus(email);
-                        navigateToMainMenu();
-                    } else {
-                        showLoginError();
-                    }
-                });
+        authRepository.loginUser(email, password, new AuthRepository.LoginCallback() {
+            @Override
+            public void onSuccess() {
+                navigateToMainMenu();
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                showLoginError(errorMessage);
+            }
+        });
     }
 
-    private void saveLoginStatus(String email) {
-        SharedPreferences preferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean(KEY_IS_LOGGED_IN, true);
-        editor.putString(KEY_EMAIL, email);
-        editor.apply();
-    }
-
-    private void showLoginError() {
-        Toast.makeText(
-                this,
-                "Authentication failed. Please check your credentials.",
-                Toast.LENGTH_SHORT
-        ).show();
+    private void showLoginError(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
 }
