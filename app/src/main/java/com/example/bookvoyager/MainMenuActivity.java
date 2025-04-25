@@ -72,7 +72,7 @@ public class MainMenuActivity extends AppCompatActivity {
         });
 
         BottomNavigationView navView = findViewById(R.id.bottomNavigationView);
-        Menu menu =  navView.getMenu();
+        Menu menu = navView.getMenu();
         setupIconSize(menu.findItem(R.id.ViewBooks), R.drawable.my_book_icon, 40, 40);
         setupIconSize(menu.findItem(R.id.ViewAnalytics), R.drawable.main_search_icon, 34, 34);
         setupIconSize(menu.findItem(R.id.ViewMaps), R.drawable.map_iocn, 42, 34);
