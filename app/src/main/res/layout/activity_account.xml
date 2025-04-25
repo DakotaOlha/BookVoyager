@@ -12,10 +12,14 @@
 
     <Button
         android:id="@+id/clearData"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Очистити всі дані"
+        android:layout_marginHorizontal="24dp"
+        android:textSize="20dp"
+        android:paddingVertical="12dp"
+        android:text="Clear all data"
+        style="@style/BrownButtonStyle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/changePassword" />
 
@@ -25,7 +29,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:layout_marginHorizontal="24dp"
-        android:text="Вийти"
+        android:text="Exit"
         style="@style/BrownButtonStyle"
         android:textSize="20dp"
         android:paddingVertical="12dp"
@@ -38,16 +42,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Видалити акаунт"
+        android:text="Delete account"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/clearData" />
 
     <Button
         android:id="@+id/chageNick"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
+        android:layout_marginHorizontal="24dp"
         android:text="Change your nick"
+        style="@style/BrownButtonStyle"
+        android:textSize="20dp"
+        android:paddingVertical="12dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
