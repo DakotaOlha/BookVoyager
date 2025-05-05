@@ -7,7 +7,6 @@
         <item name="windowNoTitle">true</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="colorSurface">@color/Background</item>
-
     </style>
 
     <style name="NavItemStyle" parent="Widget.MaterialComponents.BottomNavigationView.Colored">
@@ -16,7 +15,7 @@
     </style>
 
     <style name="CustomPopupMenu" parent="ThemeOverlay.AppCompat.Light">
-        <item name="android:itemBackground">@drawable/popup_menu_bg</item>
+        <item name="android:itemBackground">@drawable/menu_popup_bg</item>
         <item name="android:textColor">@color/white</item>
     </style>
 
@@ -26,14 +25,22 @@
     </style>
 
     <style name="BrownButtonStyle" parent="Widget.MaterialComponents.Button">
-        <item name="android:background">@drawable/rounded_brown_button</item>
+        <item name="android:background">@drawable/btn_rounded_brown</item>
         <item name="android:textColor">@color/Background</item>
         <item name="android:padding">6dp</item>
         <item name="backgroundTint">@null</item>
     </style>
 
     <style name="PlayButtonStyle" parent="Widget.MaterialComponents.Button">
-        <item name="android:background">@drawable/round_play_button</item>
+        <item name="android:background">@drawable/btn_round_play</item>
         <item name="android:textColor">@color/Background</item>
+    </style>
+
+    <style name="filterButtonStyle" parent="Widget.MaterialComponents.Button">
+        <item name="android:background">@drawable/btn_filter</item>
+        <item name="android:textColor">@color/BlackBlue</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="backgroundTint">@null</item>
     </style>
 </resources>

@@ -56,6 +56,11 @@ dependencies {
     implementation("com.google.android.material:material:1.11.0")
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
 
+    testImplementation(libs.junit)
+    testImplementation("org.mockito:mockito-core:5.11.0")
+    testImplementation("org.mockito:mockito-inline:5.2.0")
+    testImplementation ("org.robolectric:robolectric:4.10.3")
+
     implementation(libs.firebase.firestore)
     implementation(libs.volley)
     implementation(libs.firebase.storage)
