@@ -1,12 +1,9 @@
-package com.example.bookvoyager.firebase;
+package com.example.bookvoyager.Firebase;
 
 import android.content.Context;
-import android.widget.Toast;
 
-import com.example.bookvoyager.Book;
-import com.google.firebase.auth.FirebaseAuth;
+import com.example.bookvoyager.Class.Book;
 import com.google.firebase.firestore.FieldValue;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.HashMap;
@@ -18,7 +15,6 @@ public class BookLibraryManager extends FirebaseService {
 
     public BookLibraryManager(Context context){
         super();
-
         this.context = context;
     }
 
@@ -93,8 +89,6 @@ public class BookLibraryManager extends FirebaseService {
                     }
                 });
     }
-
-
     public void saveNewBookToFirestore(Book book, AddBookCallback callback) {
 
         String userId = getAuth().getCurrentUser() != null ? getAuth().getCurrentUser().getUid() : null;
@@ -162,9 +156,90 @@ public class BookLibraryManager extends FirebaseService {
                     }
                 });
     }
+    public void updateBookInFirestore(Book book, String documentId, AddBookCallback callback) {
+        String userId = getAuth().getCurrentUser() != null ? getAuth().getCurrentUser().getUid() : null;
+        getDb().collection("users")
+                .document(userId)
+                .collection("books")
+                .document(documentId)
+                .update(
+                        "title", book.getTitle(),
+                        "authors", book.getAuthor(),
+                        "isbn", book.getISBN(),
+                        "pageCount", book.getPageCount(),
+                        "country", book.getCountry(),
+                        "description", book.getDescription(),
+                        "coverUrl", book.getCoverUrl()
+                )
+                .addOnSuccessListener(unused -> {
+                    callback.onSuccess();
+                })
+                .addOnFailureListener(e -> {
+                    callback.onFailure(e.getMessage());
+                });
 
-    public interface AddBookCallback {
-        void onSuccess();
-        void onFailure(String errorMessage);
+        if (!book.getCountry().equals(book.getCountry())) {
+            getDb().collection("users")
+                    .document(userId)
+                    .collection("locationSpot")
+                    .whereEqualTo("locationId", book.getCountry())
+                    .get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Long currentCount = document.getLong("countRequiredBooks");
+                                if (currentCount != null && currentCount > 1) {
+                                    getDb().collection("users")
+                                            .document(userId)
+                                            .collection("locationSpot")
+                                            .document(document.getId())
+                                            .update("countRequiredBooks", currentCount - 1);
+                                } else {
+                                    getDb().collection("users")
+                                            .document(userId)
+                                            .collection("locationSpot")
+                                            .document(document.getId())
+                                            .delete();
+                                }
+                            }
+                        }
+                    });
+
+            getDb().collection("users")
+                    .document(userId)
+                    .collection("locationSpot")
+                    .whereEqualTo("locationId", book.getCountry())
+                    .get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                long currentCount = document.getLong("countRequiredBooks") != null
+                                        ? document.getLong("countRequiredBooks")
+                                        : 0;
+
+                                getDb().collection("users")
+                                        .document(userId)
+                                        .collection("locationSpot")
+                                        .document(document.getId())
+                                        .update("countRequiredBooks", currentCount + 1);
+                            }
+                        } else {
+                            Map<String, Object> countryData = new HashMap<>();
+                            countryData.put("locationId", book.getCountry());
+                            countryData.put("countRequiredBooks", 1);
+                            countryData.put("ifUnlocked", true);
+
+                            getDb().collection("users")
+                                    .document(userId)
+                                    .collection("locationSpot")
+                                    .document()
+                                    .set(countryData);
+                        }
+                    });
+        }
     }
+//    public interface AddBookCallback {
+//        void onSuccess();
+//        void onFailure(String errorMessage);
+//    }
 }

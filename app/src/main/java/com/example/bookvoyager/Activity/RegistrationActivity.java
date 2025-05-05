@@ -1,4 +1,4 @@
-package com.example.bookvoyager;
+package com.example.bookvoyager.Activity;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -11,7 +11,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.bookvoyager.firebase.AuthRepository;
+import com.example.bookvoyager.Firebase.AuthRepository;
+import com.example.bookvoyager.R;
 
 public class RegistrationActivity extends AppCompatActivity {
 

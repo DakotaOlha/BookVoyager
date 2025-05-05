@@ -1,10 +1,8 @@
-package com.example.bookvoyager;
+package com.example.bookvoyager.Fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -14,6 +12,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+
+import com.example.bookvoyager.Activity.AccountActivity;
+import com.example.bookvoyager.Adapters.RewardAdapter;
+import com.example.bookvoyager.Class.Reward;
+import com.example.bookvoyager.R;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,15 +54,8 @@ public class RewardsFragment extends Fragment {
     }
 
     private void loadRewards() {
-        rewards.add(new Reward("Read 10 books in English", false));
-        rewards.add(new Reward("100 books read", false));
-        rewards.add(new Reward("Books from 10 different countries", false));
-        rewards.add(new Reward("Read 10 books in English", false));
-        rewards.add(new Reward("100 books read", false));
-        rewards.add(new Reward("Books from 10 different countries", false));
-        rewards.add(new Reward("Read 10 books in English", false));
-        rewards.add(new Reward("100 books read", false));
-        rewards.add(new Reward("Books from 10 different countries", false));
+        rewards.add(new Reward("Add first book", false));
+        rewards.add(new Reward("Add an Ukrainian book", false));
         rewardAdapter.notifyDataSetChanged();
     }
 }

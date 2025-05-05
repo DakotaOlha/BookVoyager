@@ -1,4 +1,4 @@
-package com.example.bookvoyager;
+package com.example.bookvoyager.Fragment;
 
 import android.app.Dialog;
 import android.content.Intent;
@@ -22,21 +22,17 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import com.bumptech.glide.Glide;
-import com.example.bookvoyager.firebase.BookLibraryManager;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.example.bookvoyager.Class.Book;
+import com.example.bookvoyager.Firebase.AddBookCallback;
+import com.example.bookvoyager.Firebase.BookLibraryManager;
+import com.example.bookvoyager.R;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FieldValue;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 public class EditBookDialogFragment extends DialogFragment {
@@ -142,7 +138,7 @@ public class EditBookDialogFragment extends DialogFragment {
         if (MODE_EDIT.equals(mode) && book != null && book.getCoverUrl() != null && !book.getCoverUrl().isEmpty()) {
             Glide.with(this)
                     .load(book.getCoverUrl())
-                    .placeholder(R.drawable.none_cover)
+                    .placeholder(R.drawable.img_none_cover)
                     .into(imageBookCover);
         }
     }
@@ -214,91 +210,24 @@ public class EditBookDialogFragment extends DialogFragment {
 
     private void updateBookInFirestore(String title, String author, String isbn, int pages,
                                        String country, String description, String coverUrl) {
-        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Book book = new Book(isbn, title, author, coverUrl);
+        book.setCountry(country);
+        book.setPageCount(pages);
+        book.setDescription(description);
 
-        db.collection("users")
-                .document(userId)
-                .collection("books")
-                .document(documentId)
-                .update(
-                        "title", title,
-                        "authors", author,
-                        "isbn", isbn,
-                        "pageCount", pages,
-                        "country", country,
-                        "description", description,
-                        "coverUrl", coverUrl
-                )
-                .addOnSuccessListener(unused -> {
-                    Toast.makeText(getContext(), "Книгу оновлено", Toast.LENGTH_SHORT).show();
-                    listener.onBookUpdated();
-                    dismiss();
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(getContext(), "Помилка при оновленні", Toast.LENGTH_SHORT).show();
-                });
+        bookLibraryManager.updateBookInFirestore(book, documentId, new AddBookCallback() {
+            @Override
+            public void onSuccess() {
+                Toast.makeText(getContext(), "Книгу оновлено", Toast.LENGTH_SHORT).show();
+                listener.onBookUpdated();
+                dismiss();
+            }
 
-        if (!book.getCountry().equals(country)) {
-            // Зменшуємо countRequiredBooks для старої країни
-            db.collection("users")
-                    .document(userId)
-                    .collection("locationSpot")
-                    .whereEqualTo("locationId", book.getCountry())
-                    .get()
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful() && !task.getResult().isEmpty()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                Long currentCount = document.getLong("countRequiredBooks");
-                                if (currentCount != null && currentCount > 1) {
-                                    db.collection("users")
-                                            .document(userId)
-                                            .collection("locationSpot")
-                                            .document(document.getId())
-                                            .update("countRequiredBooks", currentCount - 1);
-                                } else {
-                                    db.collection("users")
-                                            .document(userId)
-                                            .collection("locationSpot")
-                                            .document(document.getId())
-                                            .delete();
-                                }
-                            }
-                        }
-                    });
-
-            db.collection("users")
-                    .document(userId)
-                    .collection("locationSpot")
-                    .whereEqualTo("locationId", country)
-                    .get()
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful() && !task.getResult().isEmpty()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                long currentCount = document.getLong("countRequiredBooks") != null
-                                        ? document.getLong("countRequiredBooks")
-                                        : 0;
-
-                                db.collection("users")
-                                        .document(userId)
-                                        .collection("locationSpot")
-                                        .document(document.getId())
-                                        .update("countRequiredBooks", currentCount + 1);
-                            }
-                        } else {
-                            Map<String, Object> countryData = new HashMap<>();
-                            countryData.put("locationId", country);
-                            countryData.put("countRequiredBooks", 1);
-                            countryData.put("ifUnlocked", true);
-
-                            db.collection("users")
-                                    .document(userId)
-                                    .collection("locationSpot")
-                                    .document()
-                                    .set(countryData);
-                        }
-                    });
-        }
+            @Override
+            public void onFailure(String errorMessage) {
+                Toast.makeText(getContext(), "Помилка при оновленні", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void saveNewBookToFirestore(String title, String authors, String isbn, int pages,
@@ -309,7 +238,7 @@ public class EditBookDialogFragment extends DialogFragment {
         book.setPageCount(pages);
         book.setDescription(description);
 
-        bookLibraryManager.saveNewBookToFirestore(book, new BookLibraryManager.AddBookCallback() {
+        bookLibraryManager.saveNewBookToFirestore(book, new AddBookCallback() {
             @Override
             public void onSuccess() {
                 Toast.makeText(getContext(), "Книгу додано", Toast.LENGTH_SHORT).show();

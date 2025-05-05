@@ -1,9 +1,8 @@
-package com.example.bookvoyager;
+package com.example.bookvoyager.Fragment;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.CountDownTimer;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +19,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import android.widget.Toast;
 
+import com.example.bookvoyager.Class.ReadingSessions;
+import com.example.bookvoyager.R;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -136,7 +137,7 @@ public class BookTimerFragment extends Fragment {
 
         TableLayout tableLayout = view.findViewById(R.id.statsTable);
         addStatsRow(tableLayout, "5 березня", "21 сторінка");
-        addStatsRow(tableLayout, "2.15%", "31 сторінка на годину");
+        addStatsRow(tableLayout, "8%", "31 сторінка на годину");
 
         getDataFromFirebase();
         return view;
@@ -152,8 +153,8 @@ public class BookTimerFragment extends Fragment {
         if (coverUrl != null && (coverUrl.startsWith("http://") || coverUrl.startsWith("https://"))) {
             Picasso.get()
                     .load(coverUrl)
-                    .placeholder(R.drawable.none_cover)
-                    .error(R.drawable.none_cover)
+                    .placeholder(R.drawable.img_none_cover)
+                    .error(R.drawable.img_none_cover)
                     .into(bookCoverImageView);
         } else if (coverUrl != null && !coverUrl.isEmpty()) {
             int resId = requireContext().getResources()
@@ -162,10 +163,10 @@ public class BookTimerFragment extends Fragment {
             if (resId != 0) {
                 bookCoverImageView.setImageResource(resId);
             } else {
-                bookCoverImageView.setImageResource(R.drawable.none_cover);
+                bookCoverImageView.setImageResource(R.drawable.img_none_cover);
             }
         } else {
-            bookCoverImageView.setImageResource(R.drawable.none_cover);
+            bookCoverImageView.setImageResource(R.drawable.img_none_cover);
         }
     }
 
@@ -386,15 +387,18 @@ public class BookTimerFragment extends Fragment {
 
     }
 
+    @SuppressLint("ResourceAsColor")
     private void addStatsRow(TableLayout table, String leftText, String rightText) {
         TableRow row = new TableRow(getContext());
 
         TextView leftView = new TextView(getContext());
         leftView.setText(leftText);
+        leftView.setTextColor(R.color.BlackBlue);
         row.addView(leftView);
 
         TextView rightView = new TextView(getContext());
         rightView.setText(rightText);
+        rightView.setTextColor(R.color.BlackBlue);
         rightView.setPadding(16, 0, 0, 0);
         row.addView(rightView);
 

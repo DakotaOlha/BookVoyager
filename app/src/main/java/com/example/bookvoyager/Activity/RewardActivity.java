@@ -1,4 +1,4 @@
-package com.example.bookvoyager;
+package com.example.bookvoyager.Activity;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -12,6 +12,10 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.bookvoyager.Adapters.RewardAdapter;
+import com.example.bookvoyager.Class.Reward;
+import com.example.bookvoyager.R;
 
 import java.util.ArrayList;
 import java.util.List;

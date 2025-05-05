@@ -1,8 +1,6 @@
-package com.example.bookvoyager;
+package com.example.bookvoyager.Activity;
 
 import android.content.Intent;
-import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -10,28 +8,25 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.PopupMenu;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.example.bookvoyager.Fragment.EditBookDialogFragment;
+import com.example.bookvoyager.Fragment.MapFragment;
+import com.example.bookvoyager.Fragment.MyBooksFragment;
+import com.example.bookvoyager.Fragment.RewardsFragment;
+import com.example.bookvoyager.Fragment.SearchFragment;
+import com.example.bookvoyager.R;
 import com.example.bookvoyager.databinding.ActivityMainMenuBinding;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 public class MainMenuActivity extends AppCompatActivity {
     ActivityMainMenuBinding binding;
@@ -73,10 +68,10 @@ public class MainMenuActivity extends AppCompatActivity {
 
         BottomNavigationView navView = findViewById(R.id.bottomNavigationView);
         Menu menu = navView.getMenu();
-        setupIconSize(menu.findItem(R.id.ViewBooks), R.drawable.my_book_icon, 40, 40);
-        setupIconSize(menu.findItem(R.id.ViewAnalytics), R.drawable.main_search_icon, 34, 34);
-        setupIconSize(menu.findItem(R.id.ViewMaps), R.drawable.map_iocn, 42, 34);
-        setupIconSize(menu.findItem(R.id.ViewReward), R.drawable.awards_icon, 36, 36);
+        setupIconSize(menu.findItem(R.id.ViewBooks), R.drawable.ic_my_book, 40, 40);
+        setupIconSize(menu.findItem(R.id.ViewAnalytics), R.drawable.ic_main_search, 34, 34);
+        setupIconSize(menu.findItem(R.id.ViewMaps), R.drawable.ic_map, 42, 34);
+        setupIconSize(menu.findItem(R.id.ViewReward), R.drawable.ic_awards, 36, 36);
 
 
 

@@ -1,5 +1,5 @@
 
-package com.example.bookvoyager;
+package com.example.bookvoyager.Fragment;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.PopupMenu;
 import android.widget.PopupWindow;
 import android.widget.Toast;
 
@@ -20,6 +19,11 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.bookvoyager.Activity.AccountActivity;
+import com.example.bookvoyager.Adapters.BookAdapter;
+import com.example.bookvoyager.Class.Book;
+import com.example.bookvoyager.R;
+import com.example.bookvoyager.SortingBooks;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -37,10 +41,12 @@ public class MyBooksFragment extends Fragment {
     private Button ifReadButton;
 
     private BookAdapter bookAdapter;
-    private final List<Book> books = new ArrayList<>();
+    private List<Book> books = new ArrayList<>();
     private FirebaseFirestore db;
     private FirebaseAuth auth;
     private String currentUserId;
+
+    private SortingBooks sortingBooks = new SortingBooks();
 
 
     @Nullable
@@ -186,12 +192,14 @@ public class MyBooksFragment extends Fragment {
         SortDialogFragment dialog = new SortDialogFragment(new SortDialogFragment.OnSortOptionSelected() {
             @Override
             public void onSortByTitle() {
-                sortBooksByTitle();
+                books = sortingBooks.sortByTitle(books);
+                bookAdapter.notifyDataSetChanged();
             }
 
             @Override
             public void onSortByAuthor() {
-                sortBooksByAuthor();
+                sortingBooks.sortByAuthors(books);
+                bookAdapter.notifyDataSetChanged();
             }
         });
         dialog.show(getChildFragmentManager(), "SortDialog");

@@ -1,4 +1,4 @@
-package com.example.bookvoyager.firebase;
+package com.example.bookvoyager.Firebase;
 
 import android.app.Activity;
 import android.content.Context;
@@ -36,7 +36,6 @@ public class AuthRepository {
                     }
                 });
     }
-
     private void saveUserData(FirebaseUser user, String email, String nickname, String birthDate, RegistrationCallback callback) {
         Map<String, Object> userData = new HashMap<>();
         userData.put("nickname", nickname);
@@ -61,7 +60,6 @@ public class AuthRepository {
                     }
                 });
     }
-
     private void saveLoginPreferences(FirebaseUser user, String email) {
         preferences.edit()
                 .putBoolean("isLoggedIn", true)
@@ -69,7 +67,6 @@ public class AuthRepository {
                 .putString("uid", user.getUid())
                 .apply();
     }
-
     public void loginUser(String email, String password, LoginCallback callback) {
         firebaseService.getAuth()
                 .signInWithEmailAndPassword(email, password)
@@ -87,13 +84,10 @@ public class AuthRepository {
                     }
                 });
     }
-
     public interface RegistrationCallback {
         void onSuccess();
         void onFailure(String errorMessage);
     }
-
-
     public interface LoginCallback {
         void onSuccess();
         void onFailure(String errorMessage);

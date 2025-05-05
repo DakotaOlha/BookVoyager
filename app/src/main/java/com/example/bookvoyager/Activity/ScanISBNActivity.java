@@ -1,4 +1,4 @@
-package com.example.bookvoyager;
+package com.example.bookvoyager.Activity;
 
 import android.Manifest;
 import android.content.Intent;
@@ -16,9 +16,10 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.example.bookvoyager.Class.Book;
+import com.example.bookvoyager.Firebase.AddBookCallback;
+import com.example.bookvoyager.Firebase.BookLibraryManager;
+import com.example.bookvoyager.R;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
@@ -28,20 +29,25 @@ import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 public class ScanISBNActivity extends AppCompatActivity {
     private static final int BARCODE_CAMERA_REQUEST = 1001;
     private static final Pattern ISBN_PATTERN = Pattern.compile("^(97(8|9))?\\d{9}(\\d|X)$");
 
+    private BookLibraryManager bookLibraryManagerl;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan_isbn);
+        initializeFirebase();
         checkCameraPermission();
+    }
+
+    private void initializeFirebase() {
+        bookLibraryManagerl = new BookLibraryManager(this);
     }
 
     private void checkCameraPermission() {
@@ -177,76 +183,94 @@ public class ScanISBNActivity extends AppCompatActivity {
 
     private void saveBookToFirestore(String title, String authors, String coverUrl,
                                      String isbn, String addedDate, int pageCount, String description, String country) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        Book book = new Book(isbn, title, authors, coverUrl);
+        book.setCountry(country);
+        book.setPageCount(pageCount);
+        book.setDescription(description);
 
-        HashMap<String, Object> book = new HashMap<>();
-        book.put("title", title);
-        book.put("authors", authors);
-        book.put("coverUrl", coverUrl);
-        book.put("isbn", isbn);
-        book.put("addedDate", addedDate);
-        book.put("pageCount", pageCount);
-        book.put("description", description);
-        book.put("country", country);
+        bookLibraryManagerl.saveNewBookToFirestore(book, new AddBookCallback() {
+            @Override
+            public void onSuccess() {
+                Toast.makeText(ScanISBNActivity.this, "Book added successfully!", Toast.LENGTH_SHORT).show();
+                finish();
+            }
 
-        System.out.println("Saving book with coverUrl: " + coverUrl);
-
-        db.collection("users")
-                .document(userId)
-                .collection("books")
-                .add(book)
-                .addOnSuccessListener(documentReference -> {
-                    Toast.makeText(this, "Book added successfully!", Toast.LENGTH_SHORT).show();
-                    finish();
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Failed to add book: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                    e.printStackTrace();
-                    finish();
-                });
-
-        Map<String, Object> sessions = new HashMap<>();
-        sessions.put("title", title);
-        sessions.put("pagesRead", 0);
-        sessions.put("pagesCount", pageCount);
-
-        db.collection("users")
-                .document(userId)
-                .collection("readingSessions")
-                .document()
-                .set(sessions);
-
-        db.collection("users")
-                .document(userId)
-                .collection("locationSpot")
-                .whereEqualTo("locationId", country)
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful() && !task.getResult().isEmpty()) {
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            long currentCount = document.getLong("countRequiredBooks") != null
-                                    ? document.getLong("countRequiredBooks")
-                                    : 0;
-
-                            db.collection("users")
-                                    .document(userId)
-                                    .collection("locationSpot")
-                                    .document(document.getId())
-                                    .update("countRequiredBooks", currentCount + 1);
-                        }
-                    } else {
-                        Map<String, Object> countryData = new HashMap<>();
-                        countryData.put("locationId", country);
-                        countryData.put("countRequiredBooks", 1);
-                        countryData.put("ifUnlocked", true);
-
-                        db.collection("users")
-                                .document(userId)
-                                .collection("locationSpot")
-                                .document()
-                                .set(countryData);
-                    }
-                });
+            @Override
+            public void onFailure(String errorMessage) {
+                Toast.makeText(ScanISBNActivity.this, "Failed to add book: " + errorMessage, Toast.LENGTH_LONG).show();
+                finish();
+            }
+        });
+//
+//        FirebaseFirestore db = FirebaseFirestore.getInstance();
+//        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+//
+//        HashMap<String, Object> book = new HashMap<>();
+//        book.put("title", title);
+//        book.put("authors", authors);
+//        book.put("coverUrl", coverUrl);
+//        book.put("isbn", isbn);
+//        book.put("addedDate", addedDate);
+//        book.put("pageCount", pageCount);
+//        book.put("description", description);
+//        book.put("country", country);
+//
+//        System.out.println("Saving book with coverUrl: " + coverUrl);
+//
+//        db.collection("users")
+//                .document(userId)
+//                .collection("books")
+//                .add(book)
+//                .addOnSuccessListener(documentReference -> {
+//
+//                })
+//                .addOnFailureListener(e -> {
+//                    Toast.makeText(this, "Failed to add book: " + e.getMessage(), Toast.LENGTH_LONG).show();
+//                    e.printStackTrace();
+//                    finish();
+//                });
+//
+//        Map<String, Object> sessions = new HashMap<>();
+//        sessions.put("title", title);
+//        sessions.put("pagesRead", 0);
+//        sessions.put("pagesCount", pageCount);
+//
+//        db.collection("users")
+//                .document(userId)
+//                .collection("readingSessions")
+//                .document()
+//                .set(sessions);
+//
+//        db.collection("users")
+//                .document(userId)
+//                .collection("locationSpot")
+//                .whereEqualTo("locationId", country)
+//                .get()
+//                .addOnCompleteListener(task -> {
+//                    if (task.isSuccessful() && !task.getResult().isEmpty()) {
+//                        for (QueryDocumentSnapshot document : task.getResult()) {
+//                            long currentCount = document.getLong("countRequiredBooks") != null
+//                                    ? document.getLong("countRequiredBooks")
+//                                    : 0;
+//
+//                            db.collection("users")
+//                                    .document(userId)
+//                                    .collection("locationSpot")
+//                                    .document(document.getId())
+//                                    .update("countRequiredBooks", currentCount + 1);
+//                        }
+//                    } else {
+//                        Map<String, Object> countryData = new HashMap<>();
+//                        countryData.put("locationId", country);
+//                        countryData.put("countRequiredBooks", 1);
+//                        countryData.put("ifUnlocked", true);
+//
+//                        db.collection("users")
+//                                .document(userId)
+//                                .collection("locationSpot")
+//                                .document()
+//                                .set(countryData);
+//                    }
+//                });
     }
 }

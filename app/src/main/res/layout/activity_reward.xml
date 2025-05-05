@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/Background"
-    tools:context=".RewardActivity">
+    tools:context=".Activity.RewardActivity">
 
     <ProgressBar
         android:id="@+id/xpProgressBa"
@@ -27,7 +27,7 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/intersemibold"
+        android:fontFamily="@font/inter_semi_bold"
         android:textColor="@color/BlackBlue"
         android:text="10000/22000"
         android:textSize="15dp"
@@ -43,7 +43,7 @@
         android:layout_height="50dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:background="@drawable/account"
+        android:background="@drawable/bg_account"
         app:backgroundTint="@null"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -59,7 +59,7 @@
         android:focusable="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/user2" />
+        app:srcCompat="@drawable/ic_user" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rewardRecyclerView"
@@ -89,35 +89,35 @@
             android:layout_width="wrap_content"
             android:layout_height="60dp"
             android:layout_weight="1"
-            app:srcCompat="@drawable/my_book_icon" />
+            app:srcCompat="@drawable/ic_my_book" />
 
         <ImageView
             android:id="@+id/imageView2"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:layout_weight="1"
-            app:srcCompat="@drawable/main_search_icon" />
+            app:srcCompat="@drawable/ic_main_search" />
 
         <ImageView
             android:id="@+id/imageView3"
             android:layout_width="wrap_content"
             android:layout_height="45dp"
             android:layout_weight="1"
-            app:srcCompat="@drawable/plus_icon" />
+            app:srcCompat="@drawable/ic_plus" />
 
         <ImageView
             android:id="@+id/imageView4"
             android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:layout_weight="1"
-            app:srcCompat="@drawable/map_iocn" />
+            app:srcCompat="@drawable/ic_map" />
 
         <ImageView
             android:id="@+id/reward_image"
             android:layout_width="wrap_content"
             android:layout_height="45dp"
             android:layout_weight="1"
-            app:srcCompat="@drawable/awards_icon" />
+            app:srcCompat="@drawable/ic_awards" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

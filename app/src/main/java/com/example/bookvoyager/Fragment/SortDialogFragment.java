@@ -1,15 +1,16 @@
-package com.example.bookvoyager;
+package com.example.bookvoyager.Fragment;
 
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.example.bookvoyager.R;
 
 public class SortDialogFragment extends DialogFragment {
 
