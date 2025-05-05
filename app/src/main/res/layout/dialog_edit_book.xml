@@ -19,8 +19,8 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="Назад"
-            android:src="@drawable/arrow_circle_left"
+            android:contentDescription="@string/button_back"
+            android:src="@drawable/ic_arrow_circle_left"
             />
 
         <TextView
@@ -28,7 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:text="Edit the book"
+            android:text="@string/dialog_title"
             android:textColor="@color/BlackBlue"
             android:textSize="20sp" />
     </LinearLayout>
@@ -50,9 +50,9 @@
                 android:layout_height="200dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="8dp"
-                android:contentDescription="Обкладинка книги"
+                android:contentDescription="@string/image_book_cover"
                 android:scaleType="centerCrop"
-                android:src="@drawable/none_cover" />
+                android:src="@drawable/img_none_cover" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/button_upload_cover"
@@ -60,7 +60,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Download cover" />
+                android:text="@string/button_upload_cover" />
 
             <EditText
                 android:id="@+id/edit_book_title"

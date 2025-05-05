@@ -16,7 +16,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:background="@drawable/reward_bg"
+        android:background="@drawable/text_reward_bg"
         >
 
         <ImageView
@@ -24,7 +24,7 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_weight="1"
-            app:srcCompat="@drawable/awards_icon" />
+            app:srcCompat="@drawable/ic_awards" />
 
         <TextView
             android:id="@+id/RewardText"
@@ -33,7 +33,7 @@
             android:layout_weight="1"
             android:text="books from 10 different countries were read"
             android:textColor="@color/BlackBlue"
-            android:fontFamily="@font/interbold"
+            android:fontFamily="@font/inter_bold"
             android:textSize="16dp"
             android:gravity="center"/>
     </LinearLayout>

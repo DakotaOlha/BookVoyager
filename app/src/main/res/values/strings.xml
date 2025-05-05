@@ -1,5 +1,62 @@
 <resources>
+<!--    account -->
     <string name="app_name">BookVoyager</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="chage_nick" translatable="false">Change your nick</string>
+    <string name="change_email" translatable="false">Change your email</string>
+    <string name="change_password" translatable="false">Change password</string>
+    <string name="clear_data" translatable="false">Clear all data</string>
+    <string name="delete_account" translatable="false">Delete account</string>
+    <string name="exit" translatable="false">Exit</string>
+
+    <!--    login -->
+    <string name="main_login_text" translatable="false">Hello!</string>
+    <string name="text_email" translatable="false">Enter your email:</string>
+    <string name="enter_email" translatable="false">enter email</string>
+    <string name="text_password" translatable="false">Enter your password:</string>
+    <string name="enter_password" translatable="false">enter password</string>
+    <string name="login_button" translatable="false">Login</string>
+    <string name="registration_transition" translatable="false">Don’t have an account?</string>
+    <string name="registration_transition_link" translatable="false">" registration"</string>
+
+    <!--    registration -->
+    <string name="main_registration_text" translatable="false">Sign up!</string>
+    <string name="text_nick" translatable="false">Enter your nick:</string>
+    <string name="enter_nick" translatable="false">enter nick name</string>
+    <string name="text_birth" translatable="false">Enter your birth:</string>
+    <string name="registration" translatable="false">Registration</string>
+
+    <!--    add book menu -->
+    <string name="add_by_isbn" translatable="false">Add by name</string>
+    <string name="add_manually" translatable="false">Add manually</string>
+    <string name="add_by_photo" translatable="false">Add by photo</string>
+
+    <!--    dots menu -->
+    <string name="menu_edit" translatable="false">Edit</string>
+    <string name="menu_del" translatable="false">Delete</string>
+
+    <!--    change email -->
+    <string name="new_email" translatable="false">new email</string>
+    <string name="password" translatable="false">password</string>
+
+    <!--    change nick -->
+    <string name="new_nick" translatable="false">enter new nick</string>
+
+    <!--    edit book -->
+    <string name="button_back" translatable="false">Back</string>
+    <string name="dialog_title" translatable="false">Edit the book</string>
+    <string name="image_book_cover" translatable="false">Book cover</string>
+    <string name="button_upload_cover" translatable="false">Download cover</string>
+    <string name="edit_book_title" translatable="false">Book`s name</string>
+    <string name="edit_book_author" translatable="false">Authors</string>
+    <string name="edit_book_isbn" translatable="false">ISBN</string>
+    <string name="edit_book_pages" translatable="false">Number of pages</string>
+    <string name="edit_book_country" translatable="false">Country</string>
+    <string name="edit_book_description" translatable="false">Description</string>
+    <string name="button_save" translatable="false">Save</string>
+
+    <!--    book timer -->
+    <string name="continue_button" translatable="false">Continuous</string>
+    <string name="finish_button" translatable="false">Finish</string>
+    <string name="diary" translatable="false">Diary of records</string>
+
 </resources>

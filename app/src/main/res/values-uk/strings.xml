@@ -1,0 +1,61 @@
+<resources>
+    <!--    account -->
+    <string name="app_name">BookVoyager</string>
+    <string name="chage_nick" translatable="false">Змінити нік</string>
+    <string name="change_email" translatable="false">Змінити пошту</string>
+    <string name="change_password" translatable="false">Змінити пароль</string>
+    <string name="clear_data" translatable="false">Очистити всі дані</string>
+    <string name="delete_account" translatable="false">Видалити акаунт</string>
+    <string name="exit" translatable="false">Вихід</string>
+
+    <!--    login -->
+    <string name="main_login_text" translatable="false">Привіт!</string>
+    <string name="text_email" translatable="false">Введіть вашу пошту:</string>
+    <string name="enter_email" translatable="false">введіть пошту</string>
+    <string name="text_password" translatable="false">Введіть ваш пароль:</string>
+    <string name="enter_password" translatable="false">введіть пароль</string>
+    <string name="login_button" translatable="false">Логін</string>
+    <string name="registration_transition" translatable="false">Не маєте акаунту?</string>
+    <string name="registration_transition_link" translatable="false"> реєстрація</string>
+
+    <!--    registration -->
+    <string name="main_registration_text" translatable="false">Зареєструвати!</string>
+    <string name="text_nick" translatable="false">Введіть ваш нік:</string>
+    <string name="enter_nick" translatable="false">введіть нік</string>
+    <string name="text_birth" translatable="false">Введіть ваш день народження:</string>
+    <string name="registration" translatable="false">Реєстрація</string>
+
+    <!--    addBookMenu -->
+    <string name="add_by_isbn" translatable="false">Додати за назвою</string>
+    <string name="add_manually" translatable="false">Додати вручну</string>
+    <string name="add_by_photo" translatable="false">Додати по фото</string>
+
+    <!--    dots menu -->
+    <string name="menu_edit" translatable="false">Редагувати</string>
+    <string name="menu_del" translatable="false">Видалити</string>
+
+    <!--    change email -->
+    <string name="new_email" translatable="false">нова пошта</string>
+    <string name="password" translatable="false">пароль</string>
+
+    <!--    change nick -->
+    <string name="new_nick" translatable="false">введіть новий нік</string>
+
+    <!--    edit book -->
+    <string name="button_back" translatable="false">Назад</string>
+    <string name="dialog_title" translatable="false">Змінити книги</string>
+    <string name="image_book_cover" translatable="false">Обложка</string>
+    <string name="button_upload_cover" translatable="false">Завантажити обложку</string>
+    <string name="edit_book_title" translatable="false">Назва книги</string>
+    <string name="edit_book_author" translatable="false">Автори</string>
+    <string name="edit_book_isbn" translatable="false">ISBN</string>
+    <string name="edit_book_pages" translatable="false">Кількість книг</string>
+    <string name="edit_book_country" translatable="false">Країна</string>
+    <string name="edit_book_description" translatable="false">Опис</string>
+    <string name="button_save" translatable="false">Зберегти</string>
+
+    <!--    book timer -->
+    <string name="continue_button" translatable="false">Продовжити</string>
+    <string name="finish_button" translatable="false">Завершити</string>
+    <string name="diary" translatable="false">Записи</string>
+</resources>

@@ -14,8 +14,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="?attr/selectableItemBackgroundBorderless"
-        android:contentDescription="Back"
-        android:src="@drawable/arrow_circle_left"
+        android:contentDescription="@string/button_back"
+        android:src="@drawable/ic_arrow_circle_left"
         android:layout_gravity="start"
         />
 
@@ -31,7 +31,7 @@
         android:id="@+id/tvBookCover"
         android:layout_width="130dp"
         android:layout_height="177dp"
-        android:src="@drawable/none_cover" />
+        android:src="@drawable/img_none_cover" />
 
     <TextView
         android:id="@+id/tvBookPercent"
@@ -63,7 +63,7 @@
         android:layout_marginTop="10dp"
         android:text=""
         app:backgroundTint="@null"
-        android:background="@drawable/round_play_button"
+        android:background="@drawable/btn_round_play"
         app:strokeColor="@color/BlackBlue"
         app:strokeWidth="3dp"/>
 
@@ -89,7 +89,7 @@
             android:id="@+id/continueButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Продовжити"
+            android:text="@string/continue_button"
             android:visibility="gone"
             android:layout_marginEnd="8dp"
             app:backgroundTint="@color/LightBlue"/>
@@ -98,7 +98,7 @@
             android:id="@+id/finishButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Завершити"
+            android:text="@string/finish_button"
             android:visibility="gone"
             app:backgroundTint="@color/BlackBrown"/>
     </LinearLayout>
@@ -107,12 +107,13 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginVertical="16dp"
-        android:background="#DDD"/>
+        android:background="@color/LightBrown"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Diary of records"
+        android:text="@string/diary"
+        android:textColor="@color/BlackBrown"
         android:textSize="18sp"
         android:textStyle="bold"/>
 

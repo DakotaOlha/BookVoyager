@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/Background"
-    tools:context=".SearchFragment">
+    tools:context=".Fragment.SearchFragment">
 
     <EditText
         android:id="@+id/findNewBook"
@@ -13,7 +13,7 @@
         android:layout_height="40dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="21dp"
-        android:background="@drawable/find"
+        android:background="@drawable/text_find"
         android:inputType="text"
         android:paddingStart="14dp"
         android:paddingEnd="44dp"
@@ -28,7 +28,7 @@
         android:layout_height="50dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:background="@drawable/account"
+        android:background="@drawable/bg_account"
         app:backgroundTint="@null"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -44,7 +44,7 @@
         android:focusable="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/user2" />
+        app:srcCompat="@drawable/ic_user" />
 
     <ImageView
         android:id="@+id/search_image"
@@ -52,7 +52,7 @@
         android:layout_height="30dp"
         android:layout_marginStart="262dp"
         android:layout_marginEnd="8dp"
-        android:src="@drawable/search_icon"
+        android:src="@drawable/ic_search"
         app:layout_constraintBottom_toBottomOf="@+id/findNewBook"
         app:layout_constraintEnd_toEndOf="@+id/findNewBook"
         app:layout_constraintStart_toStartOf="@+id/findNewBook"
