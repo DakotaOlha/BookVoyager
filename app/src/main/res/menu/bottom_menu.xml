@@ -4,12 +4,12 @@
     <item
         android:id="@+id/ViewBooks"
         android:title=""
-        android:icon="@drawable/my_book_icon"/>
+        android:icon="@drawable/ic_my_book"/>
 
     <item
         android:id="@+id/ViewAnalytics"
         android:title=""
-        android:icon="@drawable/main_search_icon"/>
+        android:icon="@drawable/ic_main_search"/>
 
     <item
         android:id="@+id/empty"
@@ -20,11 +20,11 @@
     <item
         android:id="@+id/ViewMaps"
         android:title=""
-        android:icon="@drawable/map_iocn"/>
+        android:icon="@drawable/ic_map"/>
 
     <item
         android:id="@+id/ViewReward"
         android:title=""
-        android:icon="@drawable/awards_icon"/>
+        android:icon="@drawable/ic_awards"/>
 
 </menu>
