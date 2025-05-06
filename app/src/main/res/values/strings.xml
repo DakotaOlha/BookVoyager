@@ -59,4 +59,14 @@
     <string name="finish_button" translatable="false">Finish</string>
     <string name="diary" translatable="false">Diary of records</string>
 
+    <!--    my book -->
+    <string name="if_read" translatable="false">Read?</string>
+    <string name="filter_button" translatable="false">Filter</string>
+    <string name="sorting_button" translatable="false">Sorting</string>
+    <string name="text_level" translatable="false">Level</string>
+
+    <!--    sorting -->
+    <string name="sort_by_title" translatable="false">Sorting by name</string>
+    <string name="sort_by_author" translatable="false">Sorting by name</string>
+    <string name="reward_text" translatable="false">books error</string>
 </resources>

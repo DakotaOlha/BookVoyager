@@ -58,4 +58,14 @@
     <string name="continue_button" translatable="false">Продовжити</string>
     <string name="finish_button" translatable="false">Завершити</string>
     <string name="diary" translatable="false">Записи</string>
+
+    <!--    my book -->
+    <string name="if_read" translatable="false">Прочитав?</string>
+    <string name="filter_button" translatable="false">Фільтр</string>
+    <string name="sorting_button" translatable="false">Сортуавння</string>
+    <string name="text_level" translatable="false">Рівень</string>
+
+    <!--    sorting -->
+    <string name="sort_by_title" translatable="false">Сортувати за назвою</string>
+    <string name="sort_by_author" translatable="false">Сортувати за автором</string>
 </resources>

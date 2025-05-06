@@ -2,8 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/sort_by_title"
-        android:title="Sort by title" />
+        android:title="@string/sort_by_title" />
     <item
         android:id="@+id/sort_by_author"
-        android:title="Sort by author" />
+        android:title="@string/sort_by_author" />
 </menu>

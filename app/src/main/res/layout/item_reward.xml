@@ -31,7 +31,7 @@
             android:layout_width="232dp"
             android:layout_height="50dp"
             android:layout_weight="1"
-            android:text="books from 10 different countries were read"
+            android:text="@string/reward_text"
             android:textColor="@color/BlackBlue"
             android:fontFamily="@font/inter_bold"
             android:textSize="16dp"

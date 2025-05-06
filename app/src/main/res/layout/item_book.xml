@@ -37,7 +37,7 @@
             android:gravity="center"
             android:maxLines="2"
             android:paddingTop="6dp"
-            android:text="Назва книги"
+            android:text="@string/edit_book_title"
             android:textColor="@color/LightBlue"
             android:textSize="14sp"
             android:textStyle="bold" />
@@ -49,20 +49,9 @@
             android:ellipsize="end"
             android:gravity="center"
             android:maxLines="1"
-            android:text="Автор книги"
+            android:text="@string/edit_book_author"
             android:textColor="@color/BlackBrown"
             android:textSize="12sp" />
-
-        <!--        <ImageView-->
-        <!--            android:id="@+id/bookMenu"-->
-        <!--            android:layout_width="24dp"-->
-        <!--            android:layout_height="24dp"-->
-        <!--            android:layout_marginTop="4dp"-->
-        <!--            android:contentDescription="Меню книги"-->
-        <!--            android:src="@drawable/more_horiz_24px"-->
-        <!--            android:clickable="true"-->
-        <!--            android:focusable="true"-->
-        <!--            />-->
     </LinearLayout>
 
     <ImageView
