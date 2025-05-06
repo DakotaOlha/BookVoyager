@@ -22,6 +22,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.bookvoyager.Activity.AccountActivity;
 import com.example.bookvoyager.Adapters.BookAdapter;
 import com.example.bookvoyager.Class.Book;
+import com.example.bookvoyager.Class.RewardManager;
+import com.example.bookvoyager.Class.UserStats;
 import com.example.bookvoyager.R;
 import com.example.bookvoyager.SortingBooks;
 import com.google.android.gms.tasks.Task;
@@ -47,6 +49,8 @@ public class MyBooksFragment extends Fragment {
     private String currentUserId;
 
     private SortingBooks sortingBooks = new SortingBooks();
+
+
 
 
     @Nullable

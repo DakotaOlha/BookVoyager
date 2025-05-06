@@ -20,6 +20,8 @@ import android.widget.Toast;
 import com.example.bookvoyager.Activity.AccountActivity;
 import com.example.bookvoyager.Adapters.SearchBookAdapter;
 import com.example.bookvoyager.Class.Book;
+import com.example.bookvoyager.Class.RewardManager;
+import com.example.bookvoyager.Class.UserStats;
 import com.example.bookvoyager.Firebase.AddBookCallback;
 import com.example.bookvoyager.Firebase.BookLibraryManager;
 import com.example.bookvoyager.R;
@@ -47,6 +49,8 @@ public class SearchFragment extends Fragment {
 
     private BookLibraryManager bookLibraryManager;
 
+    UserStats stats = new UserStats();
+
     private final List<Book> books = new ArrayList<>();
 
     @Nullable
@@ -55,6 +59,11 @@ public class SearchFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
 
+
+        stats.setBooksAdded(0);
+        stats.setBooksRead(0);
+        stats.setNewCountriesOpened(0);
+
         initializeFirebase();
         initializeViews(view);
         setupRecyclerView();
@@ -62,6 +71,11 @@ public class SearchFragment extends Fragment {
 
         return view;
     }
+
+    String currentUserId = bookLibraryManager.getAuth().getCurrentUser() != null ? bookLibraryManager.getAuth().getCurrentUser().getUid() : null;
+    RewardManager rewardManager = new RewardManager(currentUserId, reward -> {
+        Toast.makeText(getContext(), "Отримано винагороду: " + reward.getName(), Toast.LENGTH_LONG).show();
+    });
 
     private void initializeFirebase() {
        bookLibraryManager = new BookLibraryManager(getActivity());
@@ -211,6 +225,7 @@ public class SearchFragment extends Fragment {
             this.books.clear();
             this.books.addAll(books);
             bookAdapter.notifyDataSetChanged();
+            rewardManager.checkAndAssignRewards(stats);
         });
     }
 
