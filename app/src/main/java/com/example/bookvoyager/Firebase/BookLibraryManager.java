@@ -1,8 +1,11 @@
 package com.example.bookvoyager.Firebase;
 
 import android.content.Context;
+import android.widget.Toast;
 
 import com.example.bookvoyager.Class.Book;
+import com.example.bookvoyager.Class.RewardManager;
+import com.example.bookvoyager.Class.UserStats;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -12,15 +15,24 @@ import java.util.Map;
 public class BookLibraryManager extends FirebaseService {
 
     private final Context context;
+    UserStats stats = new UserStats();
 
     public BookLibraryManager(Context context){
         super();
         this.context = context;
+
+        stats.setBooksAdded(1);
+        stats.setBooksRead(0);
+        stats.setNewCountriesOpened(0);
     }
 
     public void addBookToUserLibrary(Book book, AddBookCallback callback) {
 
+
         String currentUserId = getAuth().getCurrentUser() != null ? getAuth().getCurrentUser().getUid() : null;
+        RewardManager rewardManager = new RewardManager(currentUserId, reward -> {
+            Toast.makeText(context, "Отримано винагороду: " + reward.getName(), Toast.LENGTH_LONG).show();
+        });
 
         Map<String, Object> bookData = new HashMap<>();
         bookData.put("title", book.getTitle());
@@ -40,6 +52,7 @@ public class BookLibraryManager extends FirebaseService {
                 .set(bookData)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
+                        rewardManager.checkAndAssignRewards(stats);
                         callback.onSuccess();
                     } else {
                         callback.onFailure("Помилка при додаванні книги");

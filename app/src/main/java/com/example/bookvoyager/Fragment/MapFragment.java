@@ -12,14 +12,11 @@ import com.example.bookvoyager.R;
 
 public class MapFragment extends Fragment {
 
-    public MapFragment() {
-
-    }
+    public MapFragment() {}
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override

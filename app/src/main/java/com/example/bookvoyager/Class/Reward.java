@@ -6,14 +6,12 @@ public class Reward {
     private String name;
     private String description;
     private String iconUrl;
-    private RewardCondition conditions;
-    boolean condition;
+    private RewardCondition condition;
 
     public Reward() {}
 
-    public Reward(String desc, boolean condition){
+    public Reward(String desc){
         description = desc;
-        this.condition = condition;
     }
 
     public String getId() {
@@ -44,12 +42,12 @@ public class Reward {
         this.iconUrl = iconUrl;
     }
 
-    public RewardCondition getConditions() {
-        return conditions;
+    public RewardCondition getCondition() {
+        return condition;
     }
 
-    public void setConditions(RewardCondition conditions) {
-        this.conditions = conditions;
+    public void setCondition(RewardCondition conditions) {
+        this.condition = conditions;
     }
 
     public String getDescription(){

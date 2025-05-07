@@ -54,8 +54,8 @@ public class RewardsFragment extends Fragment {
     }
 
     private void loadRewards() {
-        rewards.add(new Reward("Add first book", false));
-        rewards.add(new Reward("Add an Ukrainian book", false));
+        rewards.add(new Reward("Add first book"));
+        rewards.add(new Reward("Add an Ukrainian book"));
         rewardAdapter.notifyDataSetChanged();
     }
 }

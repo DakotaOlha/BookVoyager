@@ -55,15 +55,15 @@ public class RewardActivity extends AppCompatActivity {
     }
 
     private void loadRewards() {
-        rewards.add(new Reward("Read 10 books in English", (1>10)));
-        rewards.add(new Reward("100 books read", (1>10)));
-        rewards.add(new Reward("books from 10 different countries were read", (1>10)));
-        rewards.add(new Reward("Read 10 books in English", (1>10)));
-        rewards.add(new Reward("100 books read", (1>10)));
-        rewards.add(new Reward("books from 10 different countries were read", (1>10)));
-        rewards.add(new Reward("Read 10 books in English", (1>10)));
-        rewards.add(new Reward("100 books read", (1>10)));
-        rewards.add(new Reward("books from 10 different countries were read", (1>10)));
+        rewards.add(new Reward("Read 10 books in English"));
+        rewards.add(new Reward("100 books read"));
+        rewards.add(new Reward("books from 10 different countries were read"));
+        rewards.add(new Reward("Read 10 books in English"));
+        rewards.add(new Reward("100 books read"));
+        rewards.add(new Reward("books from 10 different countries were read"));
+        rewards.add(new Reward("Read 10 books in English"));
+        rewards.add(new Reward("100 books read"));
+        rewards.add(new Reward("books from 10 different countries were read"));
         rewardAdapter.notifyDataSetChanged();
     }
 }

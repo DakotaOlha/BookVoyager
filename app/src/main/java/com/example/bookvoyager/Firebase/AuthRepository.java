@@ -59,6 +59,7 @@ public class AuthRepository {
                         callback.onFailure("Failed to save user data.");
                     }
                 });
+
     }
     private void saveLoginPreferences(FirebaseUser user, String email) {
         preferences.edit()

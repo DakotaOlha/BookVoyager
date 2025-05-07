@@ -25,7 +25,7 @@ public class RewardManager {
         firebaseService.getDb().collection("rewards").get().addOnSuccessListener(rewardSnapshot -> {
             firebaseService.getDb().collection("users")
                     .document(userId)
-                    .collection("user_rewards")
+                    .collection("rewards")
                     .get().addOnSuccessListener(userRewardSnapshot -> {
                         Set<String> userRewardIds = new HashSet<>();
                         for (DocumentSnapshot doc : userRewardSnapshot.getDocuments()) {
@@ -35,7 +35,7 @@ public class RewardManager {
                         for (DocumentSnapshot doc : rewardSnapshot.getDocuments()) {
                             Reward reward = doc.toObject(Reward.class);
                             if (reward != null && !userRewardIds.contains(reward.getId())) {
-                                if (isConditionMet(reward.getConditions(), userStats)) {
+                                if (isConditionMet(reward.getCondition(), userStats)) {
                                     assignRewardToUser(reward);
                                 }
                             }
@@ -63,7 +63,7 @@ public class RewardManager {
     private void assignRewardToUser(Reward reward) {
         firebaseService.getDb().collection("users")
                 .document(userId)
-                .collection("user_rewards")
+                .collection("rewards")
                 .document(reward.getId())
                 .set(new HashMap<String, Object>() {{
                     put("name", reward.getName());

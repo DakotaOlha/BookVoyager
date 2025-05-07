@@ -9,6 +9,10 @@ public class UserStats {
     private Map<String, Integer> booksByCountry;
     private int newCountriesOpened;
 
+    public UserStats(){
+        booksByCountry = new HashMap<>();
+    }
+
     public int getBooksAdded() {
         return booksAdded;
     }
@@ -41,7 +45,5 @@ public class UserStats {
         this.newCountriesOpened = newCountriesOpened;
     }
 
-    public UserStats(){
-        booksByCountry = new HashMap<>();
-    }
+
 }
