@@ -46,6 +46,7 @@ public class AuthRepository {
         userData.put("level", 0);
         userData.put("xp", 0);
         userData.put("booksRead", 0);
+        userData.put("booksAdded", 0);
 
         firebaseService.getDb()
                 .collection("users")

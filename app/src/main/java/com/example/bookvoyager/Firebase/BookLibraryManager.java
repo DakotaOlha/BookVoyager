@@ -6,6 +6,7 @@ import android.widget.Toast;
 import com.example.bookvoyager.Class.Book;
 import com.example.bookvoyager.Class.RewardManager;
 import com.example.bookvoyager.Class.UserStats;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -15,21 +16,22 @@ import java.util.Map;
 public class BookLibraryManager extends FirebaseService {
 
     private final Context context;
-    UserStats stats = new UserStats();
+    UserStats stats = UserStats.getInstance();
+
+    String currentUserId = getAuth().getCurrentUser() != null ? getAuth().getCurrentUser().getUid() : null;
 
     public BookLibraryManager(Context context){
         super();
         this.context = context;
-
-        stats.setBooksAdded(1);
-        stats.setBooksRead(0);
-        stats.setNewCountriesOpened(0);
+        if(stats != null)
+            loadUserStatsFromFirestore(currentUserId, () -> {});
+//        stats.setBooksAdded(0);
+//        stats.setBooksRead(0);
+//        stats.setCountriesOpened(0);
     }
 
     public void addBookToUserLibrary(Book book, AddBookCallback callback) {
 
-
-        String currentUserId = getAuth().getCurrentUser() != null ? getAuth().getCurrentUser().getUid() : null;
         RewardManager rewardManager = new RewardManager(currentUserId, reward -> {
             Toast.makeText(context, "Отримано винагороду: " + reward.getName(), Toast.LENGTH_LONG).show();
         });
@@ -52,6 +54,9 @@ public class BookLibraryManager extends FirebaseService {
                 .set(bookData)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
+                        stats.setBooksRead(stats.getBooksRead()+1);
+                        stats.setBooksAdded(stats.getBooksAdded()+1);
+                        stats.addCountry(book.getCountry());
                         rewardManager.checkAndAssignRewards(stats);
                         callback.onSuccess();
                     } else {
@@ -251,8 +256,41 @@ public class BookLibraryManager extends FirebaseService {
                     });
         }
     }
-//    public interface AddBookCallback {
-//        void onSuccess();
-//        void onFailure(String errorMessage);
-//    }
+
+    public void loadUserStatsFromFirestore(String userId, Runnable onComplete) {
+        getDb().collection("users")
+                .document(userId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        UserStats stats = UserStats.getInstance();
+                        Long booksAdded = documentSnapshot.getLong("booksAdded");
+                        Long booksRead = documentSnapshot.getLong("booksRead");
+                        Long countriesOpened = documentSnapshot.getLong("countriesOpened");
+
+                        stats.setBooksAdded(booksAdded != null ? booksAdded.intValue() : 0);
+                        stats.setBooksRead(booksRead != null ? booksRead.intValue() : 0);
+                        stats.setCountriesOpened(countriesOpened != null ? countriesOpened.intValue() : 0);
+
+                        if(countriesOpened != null){
+                            getDb().collection("users")
+                                    .document(userId)
+                                    .collection("locationSpot")
+                                    .get()
+                                    .addOnSuccessListener(map -> {
+                                        Map<String, Integer> booksByCountryInt = new HashMap<>();
+                                        for(DocumentSnapshot m : map.getDocuments()){
+                                            booksByCountryInt.put(m.getString("locationId"), m.getLong("countRequiredBooks").intValue());
+                                        }
+                                        stats.setBooksByCountry(booksByCountryInt);
+                                    });
+                        }
+                    }
+                    if (onComplete != null) onComplete.run();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(context, "Помилка завантаження статистики", Toast.LENGTH_SHORT).show();
+                    if (onComplete != null) onComplete.run();
+                });
+    }
 }

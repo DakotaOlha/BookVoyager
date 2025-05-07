@@ -54,7 +54,7 @@ public class RewardManager {
                 int count = stats.getBooksByCountry().getOrDefault(condition.getCountry(), 0);
                 return count >= condition.getValue();
             case "country_discovered":
-                return stats.getNewCountriesOpened() >= condition.getValue();
+                return stats.getCountriesOpened() >= condition.getValue();
             default:
                 return false;
         }

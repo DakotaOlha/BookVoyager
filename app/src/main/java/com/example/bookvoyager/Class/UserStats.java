@@ -4,13 +4,31 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class UserStats {
+    private static UserStats instance;
+
     private int booksAdded;
     private int booksRead;
     private Map<String, Integer> booksByCountry;
-    private int newCountriesOpened;
+    private int countriesOpened;
 
-    public UserStats(){
+    private UserStats() {
         booksByCountry = new HashMap<>();
+    }
+
+    public static synchronized UserStats getInstance() {
+        if (instance == null) {
+            instance = new UserStats();
+        }
+        return instance;
+    }
+
+    public void addCountry(String name){
+        if (booksByCountry.containsKey(name)) {
+            booksByCountry.put(name, booksByCountry.get(name) + 1);
+        } else {
+            booksByCountry.put(name, 1);
+            countriesOpened += 1;
+        }
     }
 
     public int getBooksAdded() {
@@ -37,13 +55,11 @@ public class UserStats {
         this.booksByCountry = booksByCountry;
     }
 
-    public int getNewCountriesOpened() {
-        return newCountriesOpened;
+    public int getCountriesOpened() {
+        return countriesOpened;
     }
 
-    public void setNewCountriesOpened(int newCountriesOpened) {
-        this.newCountriesOpened = newCountriesOpened;
+    public void setCountriesOpened(int newCountriesOpened) {
+        this.countriesOpened = newCountriesOpened;
     }
-
-
 }
