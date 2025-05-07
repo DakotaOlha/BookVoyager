@@ -16,36 +16,20 @@ import java.util.Map;
 public class BookLibraryManager extends FirebaseService {
 
     private final Context context;
-    UserStats stats = UserStats.getInstance();
+    private final UserStats stats = UserStats.getInstance();
 
-    String currentUserId = getAuth().getCurrentUser() != null ? getAuth().getCurrentUser().getUid() : null;
+    private final String currentUserId = getAuth().getCurrentUser() != null ? getAuth().getCurrentUser().getUid() : null;
 
     public BookLibraryManager(Context context){
         super();
         this.context = context;
-        if(stats != null)
+        if(stats != null && currentUserId != null)
             loadUserStatsFromFirestore(currentUserId, () -> {});
-//        stats.setBooksAdded(0);
-//        stats.setBooksRead(0);
-//        stats.setCountriesOpened(0);
     }
 
     public void addBookToUserLibrary(Book book, AddBookCallback callback) {
 
-        RewardManager rewardManager = new RewardManager(currentUserId, reward -> {
-            Toast.makeText(context, "Отримано винагороду: " + reward.getName(), Toast.LENGTH_LONG).show();
-        });
-
-        Map<String, Object> bookData = new HashMap<>();
-        bookData.put("title", book.getTitle());
-        bookData.put("authors", book.getAuthor());
-        bookData.put("coverUrl", book.getCoverUrl());
-        bookData.put("pageCount", book.getPageCount());
-        bookData.put("description", book.getDescription());
-        bookData.put("country", book.getCountry());
-        bookData.put("addedDate", FieldValue.serverTimestamp());
-        bookData.put("isbn", book.getISBN());
-
+        Map<String, Object> bookData = getBookData(book);
 
         getDb().collection("users")
                 .document(currentUserId)
@@ -57,13 +41,71 @@ public class BookLibraryManager extends FirebaseService {
                         stats.setBooksRead(stats.getBooksRead()+1);
                         stats.setBooksAdded(stats.getBooksAdded()+1);
                         stats.addCountry(book.getCountry());
+
+                        RewardManager rewardManager = new RewardManager(currentUserId, reward -> {
+                            Toast.makeText(context, "Отримано винагороду: " + reward.getName(), Toast.LENGTH_LONG).show();
+                        });
                         rewardManager.checkAndAssignRewards(stats);
+
                         callback.onSuccess();
                     } else {
                         callback.onFailure("Помилка при додаванні книги");
                     }
                 });
 
+        addReadingSession(book);
+        updateOrCreateLocation(book);
+    }
+
+    public void saveNewBookToFirestore(Book book, AddBookCallback callback) {
+
+        Map<String, Object> bookData = getBookData(book);
+
+        getDb().collection("users")
+                .document(currentUserId)
+                .collection("books")
+                .add(bookData)
+                .addOnSuccessListener(documentReference -> {
+                    callback.onSuccess();
+                })
+                .addOnFailureListener(e ->
+                        callback.onFailure(e.getMessage()));
+
+        addReadingSession(book);
+        updateOrCreateLocation(book);
+    }
+
+    public void updateBookInFirestore(Book book, String documentId, AddBookCallback callback) {
+        Map<String, Object> bookData = getBookData(book);
+
+        getDb().collection("users")
+                .document(currentUserId)
+                .collection("books")
+                .document(documentId)
+                .update(bookData)
+                .addOnSuccessListener(unused -> {
+                    callback.onSuccess();
+                })
+                .addOnFailureListener(e -> {
+                    callback.onFailure(e.getMessage());
+                });
+
+    }
+
+    private Map<String, Object> getBookData(Book book) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("title", book.getTitle());
+        data.put("authors", book.getAuthor());
+        data.put("isbn", book.getISBN());
+        data.put("pageCount", book.getPageCount());
+        data.put("country", book.getCountry());
+        data.put("description", book.getDescription());
+        data.put("coverUrl", book.getCoverUrl());
+        data.put("addedDate", FieldValue.serverTimestamp());
+        return data;
+    }
+
+    private void addReadingSession(Book book) {
         Map<String, Object> sessions = new HashMap<>();
         sessions.put("title", book.getTitle());
         sessions.put("pagesRead", 0);
@@ -72,9 +114,10 @@ public class BookLibraryManager extends FirebaseService {
         getDb().collection("users")
                 .document(currentUserId)
                 .collection("readingSessions")
-                .document()
-                .set(sessions);
+                .add(sessions);
+    }
 
+    private void updateOrCreateLocation(Book book) {
         getDb().collection("users")
                 .document(currentUserId)
                 .collection("locationSpot")
@@ -82,15 +125,13 @@ public class BookLibraryManager extends FirebaseService {
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && !task.getResult().isEmpty()) {
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            long currentCount = document.getLong("countRequiredBooks") != null
-                                    ? document.getLong("countRequiredBooks")
-                                    : 0;
-
+                        for (QueryDocumentSnapshot doc : task.getResult()) {
+                            long currentCount = doc.getLong("countRequiredBooks") != null
+                                    ? doc.getLong("countRequiredBooks") : 0;
                             getDb().collection("users")
                                     .document(currentUserId)
                                     .collection("locationSpot")
-                                    .document(document.getId())
+                                    .document(doc.getId())
                                     .update("countRequiredBooks", currentCount + 1);
                         }
                     } else {
@@ -102,159 +143,9 @@ public class BookLibraryManager extends FirebaseService {
                         getDb().collection("users")
                                 .document(currentUserId)
                                 .collection("locationSpot")
-                                .document()
-                                .set(countryData);
+                                .add(countryData);
                     }
                 });
-    }
-    public void saveNewBookToFirestore(Book book, AddBookCallback callback) {
-
-        String userId = getAuth().getCurrentUser() != null ? getAuth().getCurrentUser().getUid() : null;
-
-        Map<String, Object> bookData = new HashMap<>();
-        bookData.put("title", book.getTitle());
-        bookData.put("authors", book.getAuthor());
-        bookData.put("isbn", book.getISBN());
-        bookData.put("pageCount", book.getPageCount());
-        bookData.put("country", book.getCountry());
-        bookData.put("description", book.getDescription());
-        bookData.put("addedDate", FieldValue.serverTimestamp());
-        bookData.put("coverUrl", book.getCoverUrl());
-
-        getDb().collection("users")
-                .document(userId)
-                .collection("books")
-                .add(bookData)
-                .addOnSuccessListener(documentReference -> {
-                    callback.onSuccess();
-                })
-                .addOnFailureListener(e ->
-                        callback.onFailure(e.getMessage()));
-
-        Map<String, Object> sessions = new HashMap<>();
-        sessions.put("title", book.getTitle());
-        sessions.put("pagesRead", 0);
-        sessions.put("pagesCount", book.getPageCount());
-
-        getDb().collection("users")
-                .document(userId)
-                .collection("readingSessions")
-                .document()
-                .set(sessions);
-
-        getDb().collection("users")
-                .document(userId)
-                .collection("locationSpot")
-                .whereEqualTo("locationId", book.getCountry())
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful() && !task.getResult().isEmpty()) {
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            long currentCount = document.getLong("countRequiredBooks") != null
-                                    ? document.getLong("countRequiredBooks")
-                                    : 0;
-
-                            getDb().collection("users")
-                                    .document(userId)
-                                    .collection("locationSpot")
-                                    .document(document.getId())
-                                    .update("countRequiredBooks", currentCount + 1);
-                        }
-                    } else {
-                        Map<String, Object> countryData = new HashMap<>();
-                        countryData.put("locationId", book.getCountry());
-                        countryData.put("countRequiredBooks", 1);
-                        countryData.put("ifUnlocked", true);
-
-                        getDb().collection("users")
-                                .document(userId)
-                                .collection("locationSpot")
-                                .document()
-                                .set(countryData);
-                    }
-                });
-    }
-    public void updateBookInFirestore(Book book, String documentId, AddBookCallback callback) {
-        String userId = getAuth().getCurrentUser() != null ? getAuth().getCurrentUser().getUid() : null;
-        getDb().collection("users")
-                .document(userId)
-                .collection("books")
-                .document(documentId)
-                .update(
-                        "title", book.getTitle(),
-                        "authors", book.getAuthor(),
-                        "isbn", book.getISBN(),
-                        "pageCount", book.getPageCount(),
-                        "country", book.getCountry(),
-                        "description", book.getDescription(),
-                        "coverUrl", book.getCoverUrl()
-                )
-                .addOnSuccessListener(unused -> {
-                    callback.onSuccess();
-                })
-                .addOnFailureListener(e -> {
-                    callback.onFailure(e.getMessage());
-                });
-
-        if (!book.getCountry().equals(book.getCountry())) {
-            getDb().collection("users")
-                    .document(userId)
-                    .collection("locationSpot")
-                    .whereEqualTo("locationId", book.getCountry())
-                    .get()
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful() && !task.getResult().isEmpty()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                Long currentCount = document.getLong("countRequiredBooks");
-                                if (currentCount != null && currentCount > 1) {
-                                    getDb().collection("users")
-                                            .document(userId)
-                                            .collection("locationSpot")
-                                            .document(document.getId())
-                                            .update("countRequiredBooks", currentCount - 1);
-                                } else {
-                                    getDb().collection("users")
-                                            .document(userId)
-                                            .collection("locationSpot")
-                                            .document(document.getId())
-                                            .delete();
-                                }
-                            }
-                        }
-                    });
-
-            getDb().collection("users")
-                    .document(userId)
-                    .collection("locationSpot")
-                    .whereEqualTo("locationId", book.getCountry())
-                    .get()
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful() && !task.getResult().isEmpty()) {
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                long currentCount = document.getLong("countRequiredBooks") != null
-                                        ? document.getLong("countRequiredBooks")
-                                        : 0;
-
-                                getDb().collection("users")
-                                        .document(userId)
-                                        .collection("locationSpot")
-                                        .document(document.getId())
-                                        .update("countRequiredBooks", currentCount + 1);
-                            }
-                        } else {
-                            Map<String, Object> countryData = new HashMap<>();
-                            countryData.put("locationId", book.getCountry());
-                            countryData.put("countRequiredBooks", 1);
-                            countryData.put("ifUnlocked", true);
-
-                            getDb().collection("users")
-                                    .document(userId)
-                                    .collection("locationSpot")
-                                    .document()
-                                    .set(countryData);
-                        }
-                    });
-        }
     }
 
     public void loadUserStatsFromFirestore(String userId, Runnable onComplete) {
@@ -263,7 +154,6 @@ public class BookLibraryManager extends FirebaseService {
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
-                        UserStats stats = UserStats.getInstance();
                         Long booksAdded = documentSnapshot.getLong("booksAdded");
                         Long booksRead = documentSnapshot.getLong("booksRead");
                         Long countriesOpened = documentSnapshot.getLong("countriesOpened");
@@ -271,26 +161,8 @@ public class BookLibraryManager extends FirebaseService {
                         stats.setBooksAdded(booksAdded != null ? booksAdded.intValue() : 0);
                         stats.setBooksRead(booksRead != null ? booksRead.intValue() : 0);
                         stats.setCountriesOpened(countriesOpened != null ? countriesOpened.intValue() : 0);
-
-                        if(countriesOpened != null){
-                            getDb().collection("users")
-                                    .document(userId)
-                                    .collection("locationSpot")
-                                    .get()
-                                    .addOnSuccessListener(map -> {
-                                        Map<String, Integer> booksByCountryInt = new HashMap<>();
-                                        for(DocumentSnapshot m : map.getDocuments()){
-                                            booksByCountryInt.put(m.getString("locationId"), m.getLong("countRequiredBooks").intValue());
-                                        }
-                                        stats.setBooksByCountry(booksByCountryInt);
-                                    });
-                        }
                     }
-                    if (onComplete != null) onComplete.run();
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(context, "Помилка завантаження статистики", Toast.LENGTH_SHORT).show();
-                    if (onComplete != null) onComplete.run();
+                    onComplete.run();
                 });
     }
 }
