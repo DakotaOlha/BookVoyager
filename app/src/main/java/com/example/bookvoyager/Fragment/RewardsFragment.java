@@ -16,13 +16,17 @@ import android.widget.TextView;
 import com.example.bookvoyager.Activity.AccountActivity;
 import com.example.bookvoyager.Adapters.RewardAdapter;
 import com.example.bookvoyager.Class.Reward;
+import com.example.bookvoyager.Firebase.FirebaseService;
 import com.example.bookvoyager.R;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class RewardsFragment extends Fragment {
 
+    private FirebaseService firebaseService;
+    String userId;
     private RecyclerView recyclerView;
     private RewardAdapter rewardAdapter;
     private List<Reward> rewards;
@@ -31,6 +35,9 @@ public class RewardsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_rewards, container, false);
+
+        firebaseService = FirebaseService.getInstance();
+        userId = firebaseService.getAuth().getCurrentUser() != null ? firebaseService.getAuth().getCurrentUser().getUid() : null;
 
         recyclerView = view.findViewById(R.id.rewardRecyclerView);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));
@@ -54,8 +61,18 @@ public class RewardsFragment extends Fragment {
     }
 
     private void loadRewards() {
-        rewards.add(new Reward("Add first book"));
-        rewards.add(new Reward("Add an Ukrainian book"));
-        rewardAdapter.notifyDataSetChanged();
+        firebaseService.getDb().collection("users")
+                .document(userId)
+                .collection("myRewards")
+                .get().addOnSuccessListener(rewardSnapshot -> {
+                    rewards.clear();
+                    for (DocumentSnapshot doc : rewardSnapshot.getDocuments()) {
+                        Reward reward = doc.toObject(Reward.class);
+                        if(reward != null)
+                            rewards.add(reward);
+                    }
+                    rewardAdapter.notifyDataSetChanged();
+                });
+
     }
 }

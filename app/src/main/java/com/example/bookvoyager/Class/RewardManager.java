@@ -25,7 +25,7 @@ public class RewardManager {
         firebaseService.getDb().collection("rewards").get().addOnSuccessListener(rewardSnapshot -> {
             firebaseService.getDb().collection("users")
                     .document(userId)
-                    .collection("rewards")
+                    .collection("myRewards")
                     .get().addOnSuccessListener(userRewardSnapshot -> {
                         Set<String> userRewardIds = new HashSet<>();
                         for (DocumentSnapshot doc : userRewardSnapshot.getDocuments()) {
@@ -63,7 +63,7 @@ public class RewardManager {
     private void assignRewardToUser(Reward reward) {
         firebaseService.getDb().collection("users")
                 .document(userId)
-                .collection("rewards")
+                .collection("myRewards")
                 .document(reward.getId())
                 .set(new HashMap<String, Object>() {{
                     put("name", reward.getName());
