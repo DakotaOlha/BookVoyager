@@ -197,12 +197,14 @@ public class MyBooksFragment extends Fragment {
             @Override
             public void onSortByTitle() {
                 books = sortingBooks.sortByTitle(books);
+                bookAdapter.FilterList(books);
                 bookAdapter.notifyDataSetChanged();
             }
 
             @Override
             public void onSortByAuthor() {
                 sortingBooks.sortByAuthors(books);
+                bookAdapter.FilterList(books);
                 bookAdapter.notifyDataSetChanged();
             }
         });

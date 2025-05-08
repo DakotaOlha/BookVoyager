@@ -67,6 +67,7 @@
 
     <!--    sorting -->
     <string name="sort_by_title" translatable="false">Sorting by name</string>
-    <string name="sort_by_author" translatable="false">Sorting by name</string>
+    <string name="sort_by_author" translatable="false">Sorting by authors</string>
     <string name="reward_text" translatable="false">books error</string>
+    <string name="get_reward_text" translatable="false">You have been rewarded!</string>
 </resources>

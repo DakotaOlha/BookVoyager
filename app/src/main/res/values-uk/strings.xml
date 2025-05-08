@@ -68,4 +68,5 @@
     <!--    sorting -->
     <string name="sort_by_title" translatable="false">Сортувати за назвою</string>
     <string name="sort_by_author" translatable="false">Сортувати за автором</string>
+    <string name="get_reward_text" translatable="false">Ви отримали винагороду!</string>
 </resources>
