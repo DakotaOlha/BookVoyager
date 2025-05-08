@@ -104,7 +104,7 @@ public class SvgMapView extends View {
                     if (task.isSuccessful() && !task.getResult().isEmpty()) {
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             String locationId = document.getString("locationId");
-                            if (locationId != null && countries.containsKey(locationId)) {
+                            if (locationId != null && countries.containsKey(locationId) && document.getBoolean("ifUnlocked") != false) {
                                 countries.put(locationId, true);
                                 Log.d("SvgMapView", "LocationId: " + locationId);
                             }

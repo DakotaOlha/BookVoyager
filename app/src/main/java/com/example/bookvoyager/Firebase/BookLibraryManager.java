@@ -75,7 +75,7 @@ public class BookLibraryManager extends FirebaseService {
         updateOrCreateLocation(book);
     }
 
-    public void updateBookInFirestore(Book book, String documentId, AddBookCallback callback) {
+    public void updateBookInFirestore(Book book, String lastCountry, String documentId, AddBookCallback callback) {
         Map<String, Object> bookData = getBookData(book);
 
         getDb().collection("users")
@@ -89,6 +89,8 @@ public class BookLibraryManager extends FirebaseService {
                 .addOnFailureListener(e -> {
                     callback.onFailure(e.getMessage());
                 });
+
+        updateLocationAfterUpdate(book, lastCountry);
 
     }
 
@@ -115,6 +117,66 @@ public class BookLibraryManager extends FirebaseService {
                 .document(currentUserId)
                 .collection("readingSessions")
                 .add(sessions);
+    }
+
+    private void updateLocationAfterUpdate(Book book, String lastCountry){
+        if(book.getCountry().equals(lastCountry))
+            return;
+        getDb().collection("users")
+                .document(currentUserId)
+                .collection("locationSpot")
+                .whereEqualTo("locationId", lastCountry)
+                .get()
+                .addOnSuccessListener(task -> {
+                    if(!task.isEmpty()){
+                        for(QueryDocumentSnapshot doc : task){
+                            long currentCount = doc.getLong("countRequiredBooks") != null
+                                    ? doc.getLong("countRequiredBooks") : 0;
+
+                            Map<String, Object> updates = new HashMap<>();
+                            long newCount = currentCount - 1;
+                            updates.put("countRequiredBooks", newCount);
+                            if (newCount <= 0) {
+                                updates.put("ifUnlocked", false);
+                            }
+
+                            getDb().collection("users")
+                                    .document(currentUserId)
+                                    .collection("locationSpot")
+                                    .document(doc.getId())
+                                    .update(updates);
+                        }
+                    }
+                });
+        getDb().collection("users")
+                .document(currentUserId)
+                .collection("locationSpot")
+                .whereEqualTo("locationId", book.getCountry())
+                .get()
+                .addOnSuccessListener(task -> {
+                    if (!task.isEmpty()) {
+                        for (QueryDocumentSnapshot doc : task) {
+                            long currentCount = doc.getLong("countRequiredBooks") != null
+                                    ? doc.getLong("countRequiredBooks") : 0;
+
+                            getDb().collection("users")
+                                    .document(currentUserId)
+                                    .collection("locationSpot")
+                                    .document(doc.getId())
+                                    .update("countRequiredBooks", currentCount + 1);
+                        }
+                    } else {
+                        Map<String, Object> countryData = new HashMap<>();
+                        countryData.put("locationId", book.getCountry());
+                        countryData.put("countRequiredBooks", 1);
+                        countryData.put("ifUnlocked", true);
+
+                        getDb().collection("users")
+                                .document(currentUserId)
+                                .collection("locationSpot")
+                                .add(countryData);
+                    }
+                });
     }
 
     private void updateOrCreateLocation(Book book) {

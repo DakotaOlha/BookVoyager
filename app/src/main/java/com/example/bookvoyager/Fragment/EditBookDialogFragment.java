@@ -43,7 +43,7 @@ public class EditBookDialogFragment extends DialogFragment {
 
     private String mode = MODE_EDIT;
     private Book book;
-    private String documentId, dialogTitle;
+    private String documentId, dialogTitle, lastCountry;
     private OnBookUpdatedListener listener;
     private Uri imageUri;
     private Bitmap coverBitmap;
@@ -130,6 +130,7 @@ public class EditBookDialogFragment extends DialogFragment {
             editIsbn.setText(book.getISBN());
             editPages.setText(book.getPageCount() > 0 ? String.valueOf(book.getPageCount()) : "");
             editCountry.setText(book.getCountry());
+            lastCountry = book.getCountry();
             editDescription.setText(book.getDescription());
         }
     }
@@ -215,7 +216,7 @@ public class EditBookDialogFragment extends DialogFragment {
         book.setPageCount(pages);
         book.setDescription(description);
 
-        bookLibraryManager.updateBookInFirestore(book, documentId, new AddBookCallback() {
+        bookLibraryManager.updateBookInFirestore(book, lastCountry, documentId, new AddBookCallback() {
             @Override
             public void onSuccess() {
                 Toast.makeText(getContext(), "Книгу оновлено", Toast.LENGTH_SHORT).show();
