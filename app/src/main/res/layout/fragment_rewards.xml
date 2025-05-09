@@ -15,7 +15,7 @@
         android:layout_height="40dp"
         android:layout_marginTop="20dp"
         android:max="100"
-        android:progress="45"
+        android:progress="0"
         android:progressDrawable="@drawable/progress_bar_xp"
         app:layout_constraintEnd_toStartOf="@+id/account_button"
         app:layout_constraintHorizontal_bias="0.347"
@@ -23,12 +23,12 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/xpTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/inter_semi_bold"
         android:textColor="@color/BlackBlue"
-        android:text="10000/22000"
+        android:text="0/0"
         android:textSize="15dp"
         app:layout_constraintBottom_toBottomOf="@+id/xpProgressBa"
         app:layout_constraintEnd_toEndOf="@+id/xpProgressBa"

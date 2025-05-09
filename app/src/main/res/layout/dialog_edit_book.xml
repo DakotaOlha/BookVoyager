@@ -33,7 +33,6 @@
             android:textSize="20sp" />
     </LinearLayout>
 
-    <!-- ScrollView for all inputs -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"

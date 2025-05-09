@@ -50,9 +50,6 @@ public class MyBooksFragment extends Fragment {
 
     private SortingBooks sortingBooks = new SortingBooks();
 
-
-
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -203,22 +200,12 @@ public class MyBooksFragment extends Fragment {
 
             @Override
             public void onSortByAuthor() {
-                sortingBooks.sortByAuthors(books);
+                books = sortingBooks.sortByAuthors(books);
                 bookAdapter.FilterList(books);
                 bookAdapter.notifyDataSetChanged();
             }
         });
         dialog.show(getChildFragmentManager(), "SortDialog");
-    }
-
-    private void sortBooksByTitle(){
-        Collections.sort(books, (b1, b2) -> b1.getTitle().compareToIgnoreCase(b2.getTitle()));
-        bookAdapter.notifyDataSetChanged();
-    }
-
-    private void sortBooksByAuthor(){
-        Collections.sort(books, (b1, b2) -> b1.getAuthor().compareToIgnoreCase(b2.getAuthor()));
-        bookAdapter.notifyDataSetChanged();
     }
 
     private void filterBooksByReadingStatus(String filter){

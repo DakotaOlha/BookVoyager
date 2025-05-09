@@ -38,6 +38,7 @@ public class BookLibraryManager extends FirebaseService {
                 .set(bookData)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
+                        addXpToUser(5);
                         stats.setBooksRead(stats.getBooksRead()+1);
                         stats.setBooksAdded(stats.getBooksAdded()+1);
                         stats.addCountry(book.getCountry());
@@ -55,6 +56,18 @@ public class BookLibraryManager extends FirebaseService {
 
         addReadingSession(book);
         updateOrCreateLocation(book);
+    }
+
+    private void addXpToUser(int xp) {
+        getDb().collection("users")
+                .document(currentUserId)
+                .update("xp", FieldValue.increment(xp))
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(context, "XP успішно оновлено на +" + xp, Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(context, "Не вдалося оновити XP: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 
     public void saveNewBookToFirestore(Book book, AddBookCallback callback) {

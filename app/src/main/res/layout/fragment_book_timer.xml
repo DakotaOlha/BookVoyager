@@ -92,7 +92,8 @@
             android:text="@string/continue_button"
             android:visibility="gone"
             android:layout_marginEnd="8dp"
-            app:backgroundTint="@color/LightBlue"/>
+            app:backgroundTint="#4f5d60"
+            android:textColor="@color/Background"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/finishButton"
@@ -100,7 +101,8 @@
             android:layout_height="wrap_content"
             android:text="@string/finish_button"
             android:visibility="gone"
-            app:backgroundTint="@color/BlackBrown"/>
+            app:backgroundTint="#7a3d2f"
+            android:textColor="@color/Background"/>
     </LinearLayout>
 
     <View
