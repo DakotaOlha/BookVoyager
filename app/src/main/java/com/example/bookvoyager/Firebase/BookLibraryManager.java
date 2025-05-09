@@ -1,6 +1,9 @@
 package com.example.bookvoyager.Firebase;
 
+import static java.security.AccessController.getContext;
+
 import android.content.Context;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.example.bookvoyager.Class.Book;
@@ -30,6 +33,7 @@ public class BookLibraryManager extends FirebaseService {
     public void addBookToUserLibrary(Book book, AddBookCallback callback) {
 
         Map<String, Object> bookData = getBookData(book);
+        bookData.put("status", false);
 
         getDb().collection("users")
                 .document(currentUserId)
@@ -39,9 +43,14 @@ public class BookLibraryManager extends FirebaseService {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         addXpToUser(5);
+
                         stats.setBooksRead(stats.getBooksRead()+1);
                         stats.setBooksAdded(stats.getBooksAdded()+1);
                         stats.addCountry(book.getCountry());
+
+                        getDb().collection("users")
+                                .document(currentUserId)
+                                .update("booksAdded", FieldValue.increment(1));
 
                         RewardManager rewardManager = new RewardManager(currentUserId, reward -> {
                             Toast.makeText(context, "Отримано винагороду: " + reward.getName(), Toast.LENGTH_LONG).show();
@@ -73,12 +82,15 @@ public class BookLibraryManager extends FirebaseService {
     public void saveNewBookToFirestore(Book book, AddBookCallback callback) {
 
         Map<String, Object> bookData = getBookData(book);
-
+        bookData.put("status", false);
         getDb().collection("users")
                 .document(currentUserId)
                 .collection("books")
                 .add(bookData)
                 .addOnSuccessListener(documentReference -> {
+                    getDb().collection("users")
+                            .document(currentUserId)
+                            .update("booksAdded", FieldValue.increment(1));
                     callback.onSuccess();
                 })
                 .addOnFailureListener(e ->
@@ -90,6 +102,7 @@ public class BookLibraryManager extends FirebaseService {
 
     public void updateBookInFirestore(Book book, String lastCountry, String documentId, AddBookCallback callback) {
         Map<String, Object> bookData = getBookData(book);
+        bookData.put("status", false);
 
         getDb().collection("users")
                 .document(currentUserId)
@@ -223,6 +236,35 @@ public class BookLibraryManager extends FirebaseService {
                 });
     }
 
+    public void deleteBookFromFirestore(Book book, AddBookCallback callback) {
+        getDb().collection("users")
+                .document(currentUserId)
+                .collection("books")
+                .whereEqualTo("title", book.getTitle())
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        String docId = queryDocumentSnapshots.getDocuments().get(0).getId();
+                        getDb().collection("users")
+                                .document(currentUserId)
+                                .collection("books")
+                                .document(docId)
+                                .delete()
+                                .addOnSuccessListener(aVoid -> {
+                                    getDb().collection("users")
+                                            .document(currentUserId)
+                                            .update("booksAdded", FieldValue.increment(-1));
+                                    deleteReadingSession(book);
+                                    deleteLocation(book);
+                                    callback.onSuccess();
+                                })
+                                .addOnFailureListener(e -> {
+                                    callback.onFailure(e.getMessage());
+                                });
+                    }
+                });
+    }
+
     public void loadUserStatsFromFirestore(String userId, Runnable onComplete) {
         getDb().collection("users")
                 .document(userId)
@@ -238,6 +280,42 @@ public class BookLibraryManager extends FirebaseService {
                         stats.setCountriesOpened(countriesOpened != null ? countriesOpened.intValue() : 0);
                     }
                     onComplete.run();
+                });
+    }
+
+    private void deleteReadingSession(Book book) {
+        getDb().collection("users")
+                .document(currentUserId)
+                .collection("readingSessions")
+                .whereEqualTo("title", book.getTitle())
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    for (QueryDocumentSnapshot doc : querySnapshot){
+                        doc.getReference().delete();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("SessionDelete", "Failed to delete reading sessions", e);
+                });
+    }
+
+    private void deleteLocation(Book book){
+        getDb().collection("users")
+                .document(currentUserId)
+                .collection("locationSpot")
+                .whereEqualTo("locationId", book.getCountry())
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+                    for (QueryDocumentSnapshot doc : querySnapshot){
+                        long currentCount = doc.getLong("countRequiredBooks") != null
+                                ? doc.getLong("countRequiredBooks") : 0;
+
+                        getDb().collection("users")
+                                .document(currentUserId)
+                                .collection("locationSpot")
+                                .document(doc.getId())
+                                .update("countRequiredBooks", currentCount - 1);
+                    }
                 });
     }
 }

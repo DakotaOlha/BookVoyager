@@ -20,14 +20,18 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.bookvoyager.Activity.AccountActivity;
+import com.example.bookvoyager.Activity.ScanISBNActivity;
 import com.example.bookvoyager.Adapters.BookAdapter;
 import com.example.bookvoyager.Class.Book;
 import com.example.bookvoyager.Class.RewardManager;
 import com.example.bookvoyager.Class.UserStats;
+import com.example.bookvoyager.Firebase.AddBookCallback;
+import com.example.bookvoyager.Firebase.BookLibraryManager;
 import com.example.bookvoyager.R;
 import com.example.bookvoyager.SortingBooks;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -49,6 +53,8 @@ public class MyBooksFragment extends Fragment {
     private String currentUserId;
 
     private SortingBooks sortingBooks = new SortingBooks();
+
+    private BookLibraryManager libraryManager = new BookLibraryManager(getContext());
 
     @Nullable
     @Override
@@ -120,7 +126,19 @@ public class MyBooksFragment extends Fragment {
             });
 
             popupView.findViewById(R.id.menu_del).setOnClickListener(v -> {
-                deleteBookFromFirestore(book);
+                libraryManager.deleteBookFromFirestore(book, new AddBookCallback() {
+                    @Override
+                    public void onSuccess() {
+                        Toast.makeText(getContext(), "Book is delete", Toast.LENGTH_SHORT).show();
+                        loadUserBooks();
+                    }
+
+                    @Override
+                    public void onFailure(String errorMessage) {
+                        Toast.makeText(getContext(), "Book don`t delete", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                //deleteBookFromFirestore(book);
                 popupWindow.dismiss();
             });
 
@@ -254,29 +272,5 @@ public class MyBooksFragment extends Fragment {
         return b;
     }
 
-    private void deleteBookFromFirestore(Book book) {
-        db.collection("users")
-                .document(currentUserId)
-                .collection("books")
-                .whereEqualTo("title", book.getTitle())
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    if (!queryDocumentSnapshots.isEmpty()) {
-                        String docId = queryDocumentSnapshots.getDocuments().get(0).getId();
-                        db.collection("users")
-                                .document(currentUserId)
-                                .collection("books")
-                                .document(docId)
-                                .delete()
-                                .addOnSuccessListener(aVoid -> {
-                                    Toast.makeText(getContext(), "Книгу видалено", Toast.LENGTH_SHORT).show();
-                                    loadUserBooks();
-                                })
-                                .addOnFailureListener(e -> {
-                                    Toast.makeText(getContext(), "Помилка при видаленні книги", Toast.LENGTH_SHORT).show();
-                                });
-                    }
-                });
-    }
 
 }
