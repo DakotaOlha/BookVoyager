@@ -1,9 +1,13 @@
 package com.example.bookvoyager.Firebase;
 
 import com.example.bookvoyager.Class.ReadingSessions;
+import com.example.bookvoyager.Class.Session;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class SessionsManager extends FirebaseService{
@@ -64,6 +68,23 @@ public class SessionsManager extends FirebaseService{
                         docRef.update(updates);
                     }
                 });
+    }
+
+    public void getSessions(FirestoreCallback callback){
+        getDb().collection("users")
+                .document(currentUserId)
+                .collection("readingSessions")
+                .document(currentSessionId)
+                .collection("session")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<Session> sessionsList = queryDocumentSnapshots.toObjects(Session.class);
+                    callback.onCallback(sessionsList);
+                });
+    }
+
+    public interface FirestoreCallback {
+        void onCallback(List<Session> sessions);
     }
 
     private void markBookAsCompleted(ReadingSessions readingSessions, long readingTime, String date) {

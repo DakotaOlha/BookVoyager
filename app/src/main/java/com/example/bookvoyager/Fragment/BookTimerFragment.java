@@ -20,6 +20,7 @@ import androidx.fragment.app.Fragment;
 import android.widget.Toast;
 
 import com.example.bookvoyager.Class.ReadingSessions;
+import com.example.bookvoyager.Class.Session;
 import com.example.bookvoyager.Firebase.SessionsManager;
 import com.example.bookvoyager.R;
 import com.google.android.gms.tasks.Task;
@@ -34,10 +35,10 @@ import com.squareup.picasso.Picasso;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -64,7 +65,7 @@ public class BookTimerFragment extends Fragment {
     private TextView percentTextView;
     private TextView timerTextView;
     private ImageView bookCoverImageView;
-
+    private TableLayout tableLayout;
     public static BookTimerFragment newInstance(String title, String coverUrl) {
         BookTimerFragment fragment = new BookTimerFragment();
         Bundle args = new Bundle();
@@ -96,6 +97,7 @@ public class BookTimerFragment extends Fragment {
         });
 
         bookCoverImageView = view.findViewById(R.id.tvBookCover);
+        tableLayout = view.findViewById(R.id.statsTable);
 
         TextView tvTitle = view.findViewById(R.id.tvBookTitle);
 
@@ -145,12 +147,35 @@ public class BookTimerFragment extends Fragment {
             }
         };
 
-        TableLayout tableLayout = view.findViewById(R.id.statsTable);
-        addStatsRow(tableLayout, "5 березня", "21 сторінка");
-        addStatsRow(tableLayout, "8%", "31 сторінка на годину");
-
         getDataFromFirebase();
+
+
+//        TableLayout tableLayout = view.findViewById(R.id.statsTable);
+//        addStatsRow(tableLayout, "5 березня", "21 сторінка");
+//        addStatsRow(tableLayout, "8%", "31 сторінка на годину");
+
         return view;
+    }
+
+    private void LoadData() {
+        tableLayout.removeAllViews();
+        SessionsManager sm = new SessionsManager(currentSessionId);
+        sm.getSessions(new SessionsManager.FirestoreCallback() {
+            @Override
+            public void onCallback(List<Session> sessions) {
+                for (Session ss : sessions){
+                    long seconds = ss.getReadingTime();
+
+                    long hours = seconds / 3600;
+                    long minutes = (seconds % 3600) / 60;
+
+                    String timeFormatted = String.format("%02d:%02d", hours, minutes);
+                    addStatsRow(tableLayout, ss.getDate(), timeFormatted);
+                    addStatsRow(tableLayout, String.valueOf(ss.getPercent()) + "%",  String.valueOf(ss.getCurrentPage()) + " pages");
+                }
+            }
+        });
+
     }
 
     private void initializeFirebase() {
@@ -270,7 +295,8 @@ public class BookTimerFragment extends Fragment {
                 DateFormat df = new SimpleDateFormat("dd MMMM");
                 String date = df.format(dateNow);
                 SessionsManager sm = new SessionsManager(currentSessionId);
-                sm.saveReadingProgress(readingSessions, currentPage, elapsedTime, date);
+                sm.saveReadingProgress(readingSessions, currentPage, elapsedTime/1000, date);
+                LoadData();
             }
             elapsedTime = 0;
             updateTimerText(0);
@@ -309,6 +335,7 @@ public class BookTimerFragment extends Fragment {
             if (document.get("title").equals(getArguments().getString(ARG_TITLE))) {
                 currentSessionId = document.getId();
                 readingSessions = new ReadingSessions(document.get("title").toString(), Integer.parseInt(document.get("pagesCount").toString()), Integer.parseInt(document.get("pagesRead").toString()), document.getBoolean("status"));
+                LoadData();
                 break;
             }
         }
