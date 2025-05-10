@@ -16,6 +16,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import android.widget.Toast;
 
@@ -170,8 +171,10 @@ public class BookTimerFragment extends Fragment {
                     long minutes = (seconds % 3600) / 60;
 
                     String timeFormatted = String.format("%02d:%02d", hours, minutes);
+
                     addStatsRow(tableLayout, ss.getDate(), timeFormatted);
-                    addStatsRow(tableLayout, String.valueOf(ss.getPercent()) + "%",  String.valueOf(ss.getCurrentPage()) + " pages");
+                    addStatsRow(tableLayout, ss.getPercent() + "%",  ss.getCurrentPage() + " pages");
+                    addStatsRow(tableLayout, "",  "");
                 }
             }
         });
@@ -357,13 +360,16 @@ public class BookTimerFragment extends Fragment {
 
         TextView leftView = new TextView(getContext());
         leftView.setText(leftText);
-        leftView.setTextColor(R.color.BlackBlue);
+        leftView.setTextColor(ContextCompat.getColor(getContext(), R.color.BlackBrown));
+        leftView.setTextSize(18);
+
         row.addView(leftView);
 
         TextView rightView = new TextView(getContext());
         rightView.setText(rightText);
-        rightView.setTextColor(R.color.BlackBlue);
+        rightView.setTextColor(ContextCompat.getColor(getContext(), R.color.BlackBrown));
         rightView.setPadding(16, 0, 0, 0);
+        rightView.setTextSize(18);
         row.addView(rightView);
 
         table.addView(row);
