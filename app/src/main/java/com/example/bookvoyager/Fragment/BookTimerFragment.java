@@ -25,12 +25,20 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class BookTimerFragment extends Fragment {
 
@@ -41,6 +49,7 @@ public class BookTimerFragment extends Fragment {
     private FirebaseAuth auth;
     private FirebaseFirestore db;
     private String currentUserId;
+    private String currentSessionId;
 
     private Handler handler = new Handler();
     private Runnable timerRunnable;
@@ -147,6 +156,7 @@ public class BookTimerFragment extends Fragment {
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         currentUserId = auth.getCurrentUser() != null ? auth.getCurrentUser().getUid() : null;
+        currentSessionId = null;
     }
 
     private void loadBookCover(String coverUrl) {
@@ -257,7 +267,10 @@ public class BookTimerFragment extends Fragment {
             String pageStr = input.getText().toString();
             if (!pageStr.isEmpty()) {
                 int currentPage = Integer.parseInt(pageStr);
-                //saveReadingProgress(currentPage, elapsedTime);
+                Date dateNow = new Date();
+                DateFormat df = new SimpleDateFormat("dd MMMM");
+                String date = df.format(dateNow);
+                saveReadingProgress(currentPage, elapsedTime, date);
             }
             elapsedTime = 0;
             updateTimerText(0);
@@ -275,7 +288,90 @@ public class BookTimerFragment extends Fragment {
         builder.show();
     }
 
-    private void saveReadingProgress(int currentPage, long readingTime) {
+    private void saveReadingProgress(int currentPage, long readingTime, String date) {
+        if(readingSessions == null || currentUserId == null) return;
+
+        if(currentPage > readingSessions.getPagesRead() && currentPage < readingSessions.getPagesCount()){
+            readingSessions.setPagesRead(currentPage);
+
+            int percent = (currentPage* 100) / readingSessions.getPagesCount();
+
+            Map<String, Object> session = new HashMap<>();
+            session.put("date", date);
+            session.put("currentPage", currentPage);
+            session.put("readingTime", readingTime);
+            session.put("percent", percent);
+
+            db.collection("users")
+                    .document(currentUserId)
+                    .collection("readingSessions")
+                    .document(currentSessionId)
+                    .collection("session")
+                    .add(session);
+
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("pagesRead", currentPage);
+
+            db.collection("users")
+                    .document(currentUserId)
+                    .collection("readingSessions")
+                    .whereEqualTo("title", readingSessions.getTitle())
+                    .get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                            DocumentReference docRef = task.getResult().getDocuments().get(0).getReference();
+                            docRef.update(updates);
+                        }
+                    });
+        }
+        else if (currentPage > readingSessions.getPagesRead() && currentPage >= readingSessions.getPagesCount() ) {
+            readingSessions.setPagesRead(readingSessions.getPagesCount());
+            readingSessions.setStatus(true);
+
+            Map<String, Object> session = new HashMap<>();
+            session.put("date", date);
+            session.put("currentPage", readingSessions.getPagesCount());
+            session.put("readingTime", readingTime);
+            session.put("percent", 100);
+
+            db.collection("users")
+                    .document(currentUserId)
+                    .collection("readingSessions")
+                    .document(currentSessionId)
+                    .collection("session")
+                    .add(session);
+
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("pagesRead", readingSessions.getPagesCount());
+            updates.put("status", true);
+
+            db.collection("users")
+                    .document(currentUserId)
+                    .collection("readingSessions")
+                    .whereEqualTo("title", readingSessions.getTitle())
+                    .get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                            DocumentReference docRef = task.getResult().getDocuments().get(0).getReference();
+                            docRef.update(updates);
+                        }
+                    });
+            Map<String, Object> updatesBook = new HashMap<>();
+            updatesBook.put("status", true);
+
+            db.collection("users")
+                    .document(currentUserId)
+                    .collection("books")
+                    .whereEqualTo("title", readingSessions.getTitle())
+                    .get()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                            DocumentReference docRef = task.getResult().getDocuments().get(0).getReference();
+                            docRef.update(updatesBook);
+                        }
+                    });
+            playButton.setClickable(false);
+        }
 //        if (readingSessions == null || currentUserId == null) return;
 //
 //        if (currentPage > readingSessions.getPagesRead()) {
@@ -311,46 +407,7 @@ public class BookTimerFragment extends Fragment {
 //                    });
 //        }
     }
-    private void saveReadingProgress(int currentPage) {
-//        if (readingSessions == null || currentUserId == null) return;
-//
-//        // Update pages read if current page it.svg greater than previous
-//        if (currentPage > readingSessions.getPagesRead()) {
-//            readingSessions.setPagesRead(currentPage);
-//
-//            // Calculate new progress
-//            percent = Math.round(((float) readingSessions.getPagesRead() / readingSessions.getPagesCount()) * 100);
-//
-//            // Update UI
-//            View view = getView();
-//            if (view != null) {
-//                TextView tvBookPercent = view.findViewById(R.id.tvBookPercent);
-//                tvBookPercent.setText(percent + "%");
-//                ProgressBar tvBookProgressBar = view.findViewById(R.id.tvBookProgressBar);
-//                tvBookProgressBar.setProgress(percent);
-//            }
-//
-//            // Update in Firebase
-//            Map<String, Object> updates = new HashMap<>();
-//            updates.put("pagesRead", currentPage);
-//            updates.put("lastReadingTime", System.currentTimeMillis());
-//            updates.put("totalReadingTime", totalReadingTime);
-//
-//            db.collection("users")
-//                    .document(currentUserId)
-//                    .collection("readingSessions")
-//                    .whereEqualTo("title", readingSessions.getTitle())
-//                    .get()
-//                    .addOnCompleteListener(task -> {
-//                        if (task.isSuccessful() && !task.getResult().isEmpty()) {
-//                            DocumentReference docRef = task.getResult().getDocuments().get(0).getReference();
-//                            docRef.update(updates)
-//                                    .addOnSuccessListener(aVoid -> Toast.makeText(getContext(), "Прогрес збережено", Toast.LENGTH_SHORT).show())
-//                                    .addOnFailureListener(e -> Toast.makeText(getContext(), "Помилка збереження", Toast.LENGTH_SHORT).show());
-//                        }
-//                    });
-//        }
-    }
+
 
     private void getDataFromFirebase() {
         db.collection("users")
@@ -371,7 +428,8 @@ public class BookTimerFragment extends Fragment {
         readingSessions = null;
         for (QueryDocumentSnapshot document : task.getResult()) {
             if (document.get("title").equals(getArguments().getString(ARG_TITLE))) {
-                readingSessions = new ReadingSessions(document.get("title").toString(), Integer.parseInt(document.get("pagesCount").toString()), Integer.parseInt(document.get("pagesRead").toString()));
+                currentSessionId = document.getId();
+                readingSessions = new ReadingSessions(document.get("title").toString(), Integer.parseInt(document.get("pagesCount").toString()), Integer.parseInt(document.get("pagesRead").toString()), document.getBoolean("status"));
                 break;
             }
         }

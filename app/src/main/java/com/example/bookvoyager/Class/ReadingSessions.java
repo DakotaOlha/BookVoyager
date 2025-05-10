@@ -5,10 +5,13 @@ public class ReadingSessions {
     private int pagesCount;
     private int pagesRead;
 
-    public ReadingSessions(String title, int pagesCount, int pagesRead){
+    private boolean status;
+
+    public ReadingSessions(String title, int pagesCount, int pagesRead, boolean status){
         this.title = title;
         this.pagesCount = pagesCount;
         this.pagesRead = pagesRead;
+        this.status = status;
     }
 
     public String getTitle() {
@@ -21,5 +24,15 @@ public class ReadingSessions {
 
     public int getPagesRead() {
         return pagesRead;
+    }
+
+    public void setPagesRead(int page){ pagesRead = page;}
+
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
     }
 }

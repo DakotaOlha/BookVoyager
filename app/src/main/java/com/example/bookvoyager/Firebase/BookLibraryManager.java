@@ -138,6 +138,7 @@ public class BookLibraryManager extends FirebaseService {
         sessions.put("title", book.getTitle());
         sessions.put("pagesRead", 0);
         sessions.put("pagesCount", book.getPageCount());
+        sessions.put("status", false);
 
         getDb().collection("users")
                 .document(currentUserId)
