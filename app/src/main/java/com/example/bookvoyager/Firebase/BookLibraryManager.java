@@ -20,6 +20,7 @@ public class BookLibraryManager extends FirebaseService {
 
     private final Context context;
     private final UserStats stats = UserStats.getInstance();
+    AddXpLevelToUser xpManager = new AddXpLevelToUser();
 
     private final String currentUserId = getAuth().getCurrentUser() != null ? getAuth().getCurrentUser().getUid() : null;
 
@@ -42,7 +43,17 @@ public class BookLibraryManager extends FirebaseService {
                 .set(bookData)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        addXpToUser(5);
+                        xpManager.addXpToUser(5, new AddBookCallback() {
+                            @Override
+                            public void onSuccess() {
+                                Toast.makeText(context, "XP успішно оновлено на +" + 5, Toast.LENGTH_SHORT).show();
+                            }
+
+                            @Override
+                            public void onFailure(String errorMessage) {
+                                Toast.makeText(context, "Не вдалося оновити XP: " + errorMessage, Toast.LENGTH_SHORT).show();
+                            }
+                        });
 
                         stats.setBooksRead(stats.getBooksRead()+1);
                         stats.setBooksAdded(stats.getBooksAdded()+1);
@@ -54,6 +65,17 @@ public class BookLibraryManager extends FirebaseService {
 
                         RewardManager rewardManager = new RewardManager(currentUserId, reward -> {
                             Toast.makeText(context, "Отримано винагороду: " + reward.getName(), Toast.LENGTH_LONG).show();
+                            xpManager.addXpToUser(20, new AddBookCallback() {
+                                @Override
+                                public void onSuccess() {
+
+                                }
+
+                                @Override
+                                public void onFailure(String errorMessage) {
+
+                                }
+                            });
                         });
                         rewardManager.checkAndAssignRewards(stats);
 
@@ -65,18 +87,6 @@ public class BookLibraryManager extends FirebaseService {
 
         addReadingSession(book);
         updateOrCreateLocation(book);
-    }
-
-    private void addXpToUser(int xp) {
-        getDb().collection("users")
-                .document(currentUserId)
-                .update("xp", FieldValue.increment(xp))
-                .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(context, "XP успішно оновлено на +" + xp, Toast.LENGTH_SHORT).show();
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(context, "Не вдалося оновити XP: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
     }
 
     public void saveNewBookToFirestore(Book book, AddBookCallback callback) {
@@ -202,6 +212,18 @@ public class BookLibraryManager extends FirebaseService {
                                 .document(currentUserId)
                                 .collection("locationSpot")
                                 .add(countryData);
+
+                        xpManager.addXpToUser(15, new AddBookCallback() {
+                            @Override
+                            public void onSuccess() {
+
+                            }
+
+                            @Override
+                            public void onFailure(String errorMessage) {
+
+                            }
+                        });
                     }
                 });
     }
@@ -233,6 +255,17 @@ public class BookLibraryManager extends FirebaseService {
                                 .document(currentUserId)
                                 .collection("locationSpot")
                                 .add(countryData);
+                        xpManager.addXpToUser(15, new AddBookCallback() {
+                            @Override
+                            public void onSuccess() {
+
+                            }
+
+                            @Override
+                            public void onFailure(String errorMessage) {
+
+                            }
+                        });
                     }
                 });
     }

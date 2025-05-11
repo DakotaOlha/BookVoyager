@@ -102,12 +102,47 @@ public class RegistrationActivity extends AppCompatActivity {
             emailEditText.setError("Email cannot be empty");
             return false;
         }
+        if (!email.contains("@")) {
+            emailEditText.setError("Invalid email format (must contain @)");
+            return false;
+        }
         if (password.isEmpty()) {
             passwordEditText.setError("Password cannot be empty");
             return false;
         }
+        if (!password.matches(".*[A-Za-z].*") || !password.matches(".*\\d.*")) {
+            passwordEditText.setError("Password must contain at least one letter and one digit");
+            return false;
+        }
         if (day.isEmpty() || month.isEmpty() || year.isEmpty()) {
             yearEditText.setError("Birth date cannot be empty");
+            return false;
+        }
+        try {
+            int d = Integer.parseInt(day);
+            int m = Integer.parseInt(month);
+            int y = Integer.parseInt(year);
+
+            if((d < 0 || d > 31) || (m < 0 || m > 12)){
+                yearEditText.setError("Data not valid");
+                return false;
+            }
+
+            java.util.Calendar birthDate = java.util.Calendar.getInstance();
+            birthDate.set(y, m - 1, d);
+
+            java.util.Calendar today = java.util.Calendar.getInstance();
+            int age = today.get(java.util.Calendar.YEAR) - birthDate.get(java.util.Calendar.YEAR);
+            if (today.get(java.util.Calendar.DAY_OF_YEAR) < birthDate.get(java.util.Calendar.DAY_OF_YEAR)) {
+                age--;
+            }
+
+            if (age < 6 || age > 120) {
+                yearEditText.setError("You must be at least 6 years old to register");
+                return false;
+            }
+        } catch (IllegalArgumentException e) {
+            yearEditText.setError("Invalid date of birth");
             return false;
         }
         return true;

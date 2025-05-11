@@ -88,6 +88,7 @@ public class RewardsFragment extends Fragment {
             xpText.setText(xp+"/100");
             float percent = (float) (xp/100.0);
             xpProgressBa.setProgress((int)(percent*100));
+
         }
         else if(xp < 250) {
             xpText.setText(xp+"/250");

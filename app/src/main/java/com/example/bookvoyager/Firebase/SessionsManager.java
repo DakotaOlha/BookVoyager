@@ -31,8 +31,21 @@ public class SessionsManager extends FirebaseService{
         if(currentPage > readingSessions.getPagesRead() && currentPage < readingSessions.getPagesCount())
             updateReadingProgress(readingSessions, currentPage, readingTime, date);
 
-        else if (currentPage > readingSessions.getPagesRead() && currentPage >= readingSessions.getPagesCount() )
+        else if (currentPage > readingSessions.getPagesRead() && currentPage >= readingSessions.getPagesCount()) {
             markBookAsCompleted(readingSessions, readingTime, date);
+            AddXpLevelToUser xpManager = new AddXpLevelToUser();
+            xpManager.addXpToUser(20, new AddBookCallback() {
+                @Override
+                public void onSuccess() {
+
+                }
+
+                @Override
+                public void onFailure(String errorMessage) {
+
+                }
+            });
+        }
 
     }
 
