@@ -2,10 +2,16 @@ package com.example.bookvoyager.Firebase;
 
 import static java.security.AccessController.getContext;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.cardview.widget.CardView;
+
+import com.airbnb.lottie.LottieAnimationView;
+import com.example.bookvoyager.Animation;
 import com.example.bookvoyager.Class.Book;
 import com.example.bookvoyager.Class.RewardManager;
 import com.example.bookvoyager.Class.UserStats;
@@ -18,15 +24,31 @@ import java.util.Map;
 
 public class BookLibraryManager extends FirebaseService {
 
+    private CardView rewardCard;
+    private LottieAnimationView confettiAnimation;
+
+    private Animation animation;
     private final Context context;
+    private TextView rewardDescription;
     private final UserStats stats = UserStats.getInstance();
-    AddXpLevelToUser xpManager = new AddXpLevelToUser();
+    private AddXpLevelToUser xpManager = new AddXpLevelToUser();
 
     private final String currentUserId = getAuth().getCurrentUser() != null ? getAuth().getCurrentUser().getUid() : null;
 
     public BookLibraryManager(Context context){
         super();
         this.context = context;
+        if(stats != null && currentUserId != null)
+            loadUserStatsFromFirestore(currentUserId, () -> {});
+    }
+
+    public BookLibraryManager(Context context, CardView rewardCard, LottieAnimationView confettiAnimation, TextView rewardDescription){
+        super();
+        this.context = context;
+        this.confettiAnimation = confettiAnimation;
+        this.rewardCard = rewardCard;
+        this.rewardDescription = rewardDescription;
+        animation = new Animation();
         if(stats != null && currentUserId != null)
             loadUserStatsFromFirestore(currentUserId, () -> {});
     }
@@ -46,7 +68,6 @@ public class BookLibraryManager extends FirebaseService {
                         xpManager.addXpToUser(5, new AddBookCallback() {
                             @Override
                             public void onSuccess() {
-                                Toast.makeText(context, "XP успішно оновлено на +" + 5, Toast.LENGTH_SHORT).show();
                             }
 
                             @Override
@@ -64,7 +85,13 @@ public class BookLibraryManager extends FirebaseService {
                                 .update("booksAdded", FieldValue.increment(1));
 
                         RewardManager rewardManager = new RewardManager(currentUserId, reward -> {
-                            Toast.makeText(context, "Отримано винагороду: " + reward.getName(), Toast.LENGTH_LONG).show();
+                            if (rewardDescription != null) {
+                                ((Activity)context).runOnUiThread(() -> {
+                                    rewardDescription.setText(reward.getName());
+                                });
+                            }
+                            animation.showRewardWithAutoHide(rewardCard, confettiAnimation, 3000);
+                            //Toast.makeText(context, "Отримано винагороду: " + reward.getName(), Toast.LENGTH_LONG).show();
                             xpManager.addXpToUser(20, new AddBookCallback() {
                                 @Override
                                 public void onSuccess() {

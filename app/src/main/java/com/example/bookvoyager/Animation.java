@@ -10,11 +10,9 @@ import androidx.cardview.widget.CardView;
 import com.airbnb.lottie.LottieAnimationView;
 
 public class Animation {
-    private View view;
     private Handler handler;
 
-    public Animation(View view) {
-        this.view = view;
+    public Animation() {
         this.handler = new Handler();
     }
 

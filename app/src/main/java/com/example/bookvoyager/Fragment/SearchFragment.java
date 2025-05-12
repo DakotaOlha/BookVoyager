@@ -57,11 +57,6 @@ public class SearchFragment extends Fragment {
     private BookLibraryManager bookLibraryManager;
 
     TextView xpText;
-
-    CardView rewardCard;
-
-    LottieAnimationView confettiAnimation;
-
     Animation animation;
 
     private final List<Book> books = new ArrayList<>();
@@ -72,7 +67,7 @@ public class SearchFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
 
-        initializeFirebase();
+        initializeFirebase(view);
         initializeViews(view);
         setupRecyclerView();
         setupSearchButton(view);
@@ -80,16 +75,17 @@ public class SearchFragment extends Fragment {
         return view;
     }
 
-    private void initializeFirebase() {
-       bookLibraryManager = new BookLibraryManager(getActivity());
+    private void initializeFirebase(View view) {
+        CardView rewardCard = view.findViewById(R.id.rewardCard);
+        LottieAnimationView confettiAnimation = view.findViewById(R.id.confettiAnimation);
+        TextView rewardDescription = view.findViewById(R.id.rewardDescription);
+        bookLibraryManager = new BookLibraryManager(getActivity(), rewardCard, confettiAnimation, rewardDescription);
     }
 
     private void initializeViews(View view) {
         recyclerView = view.findViewById(R.id.bookRecyclerView);
-        rewardCard = view.findViewById(R.id.rewardCard);
         searchEditText = view.findViewById(R.id.findNewBook);
-        confettiAnimation = view.findViewById(R.id.confettiAnimation);
-        animation = new Animation(view);
+        animation = new Animation();
         xpText = view.findViewById(R.id.xpText);
         Button account_button = view.findViewById(R.id.account_button);
         account_button.setOnClickListener(v -> navigateToAccountActivity());
@@ -111,7 +107,7 @@ public class SearchFragment extends Fragment {
             @Override
             public void onSuccess() {
                 requireActivity().runOnUiThread(() -> {
-                    // Показуємо текст XP
+
                     xpText.setVisibility(View.VISIBLE);
                     xpText.setAlpha(0f);
                     xpText.setScaleX(0.5f);
@@ -128,11 +124,11 @@ public class SearchFragment extends Fragment {
                             .start();
 
                     // Затримка перед показом картки
-                    new Handler().postDelayed(() -> {
-                        animation.showRewardWithAutoHide(rewardCard, confettiAnimation, 3000);
-                    }, 300);
-
-                    // Сховати текст XP через 3 секунди
+//                    new Handler().postDelayed(() -> {
+//                        animation.showRewardWithAutoHide(rewardCard, confettiAnimation, 3000);
+//                    }, 300);
+//
+//                    // Сховати текст XP через 3 секунди
                     new Handler().postDelayed(() -> {
                         xpText.animate()
                                 .alpha(0f)
@@ -142,7 +138,7 @@ public class SearchFragment extends Fragment {
                                 .setDuration(400)
                                 .withEndAction(() -> xpText.setVisibility(View.GONE))
                                 .start();
-                    }, 3300); // 300 + 3000
+                    }, 1500); // 300 + 3000
                 });
             }
 

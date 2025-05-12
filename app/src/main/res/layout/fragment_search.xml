@@ -89,7 +89,7 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/rewardCard"
-        android:layout_width="300dp"
+        android:layout_width="350dp"
         android:layout_height="wrap_content"
         android:visibility="gone"
         android:layout_margin="20dp"
@@ -131,9 +131,9 @@
                     android:layout_marginTop="10dp"/>
 
                 <TextView
+                    android:id="@+id/rewardDescription"
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
-                    android:id="@+id/rewardDescription"
                     android:text="Ви додали свою першу книгу 📚"
                     android:textSize="16sp"
                     android:gravity="center"
