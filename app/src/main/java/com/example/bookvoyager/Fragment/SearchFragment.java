@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.bookvoyager.Activity.AccountActivity;
@@ -49,6 +50,8 @@ public class SearchFragment extends Fragment {
 
     private BookLibraryManager bookLibraryManager;
 
+    TextView xpText;
+
 
 
     private final List<Book> books = new ArrayList<>();
@@ -74,6 +77,7 @@ public class SearchFragment extends Fragment {
     private void initializeViews(View view) {
         recyclerView = view.findViewById(R.id.bookRecyclerView);
         searchEditText = view.findViewById(R.id.findNewBook);
+        xpText = view.findViewById(R.id.xpText);
         Button account_button = view.findViewById(R.id.account_button);
         account_button.setOnClickListener(v -> navigateToAccountActivity());
     }
@@ -94,7 +98,19 @@ public class SearchFragment extends Fragment {
         bookLibraryManager.addBookToUserLibrary(book, new AddBookCallback() {
             @Override
             public void onSuccess() {
-                showToast("Книгу додано до бібліотеки");
+                //showToast("Книгу додано до бібліотеки");
+
+                xpText.setVisibility(View.VISIBLE);
+                xpText.setAlpha(0f);
+                xpText.setTranslationY(100f);
+                xpText.setText("+50 XP");
+
+                xpText.animate()
+                        .alpha(1f)
+                        .translationYBy(-100f)
+                        .setDuration(800)
+                        .withEndAction(() -> xpText.setVisibility(View.GONE))
+                        .start();
             }
 
             @Override

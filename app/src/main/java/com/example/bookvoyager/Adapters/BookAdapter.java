@@ -18,30 +18,23 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder> {
-
     private List<Book> books;
     private FragmentManager fragmentManager;
-
     public interface OnBookMenuClickListener {
         void onBookMenuClick(Book book, View anchorView);
     }
-
     private OnBookMenuClickListener menuClickListener;
-
     public void setOnBookMenuClickListener(OnBookMenuClickListener listener) {
         this.menuClickListener = listener;
     }
-
     public BookAdapter(List<Book> books, FragmentManager fragmentManager) {
         this.books = books;
         this.fragmentManager = fragmentManager;
     }
-
     public void FilterList(List<Book> filteredList){
         books = filteredList;
         notifyDataSetChanged();
     }
-
     public static class BookViewHolder extends RecyclerView.ViewHolder {
         ImageView bookCover, bookMenu;
         TextView bookTitle, bookAuthor;
@@ -54,14 +47,12 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
             bookMenu = itemView.findViewById(R.id.bookMenu);
         }
     }
-
     @NonNull
     @Override
     public BookViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_book, parent, false);
         return new BookViewHolder(view);
     }
-
     @Override
     public void onBindViewHolder(@NonNull BookViewHolder holder, int position) {
         Book book = books.get(position);
@@ -107,9 +98,9 @@ public class BookAdapter extends RecyclerView.Adapter<BookAdapter.BookViewHolder
                     .commit();
         });
     }
-
     @Override
     public int getItemCount() {
         return books.size();
     }
 }
+

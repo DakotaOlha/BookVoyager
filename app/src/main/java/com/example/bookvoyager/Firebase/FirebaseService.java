@@ -11,11 +11,11 @@ public class FirebaseService {
         auth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
     }
-
     protected FirebaseService(FirebaseAuth auth, FirebaseFirestore db) {
         this.auth = auth;
         this.db = db;
     }
+
     public static synchronized FirebaseService getInstance() {
         if (instance == null) {
             instance = new FirebaseService();
