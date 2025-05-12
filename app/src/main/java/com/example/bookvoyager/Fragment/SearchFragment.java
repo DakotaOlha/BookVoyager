@@ -5,21 +5,27 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.OvershootInterpolator;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.example.bookvoyager.Activity.AccountActivity;
 import com.example.bookvoyager.Adapters.SearchBookAdapter;
+import com.example.bookvoyager.Animation;
 import com.example.bookvoyager.Class.Book;
 import com.example.bookvoyager.Class.RewardManager;
 import com.example.bookvoyager.Class.UserStats;
@@ -52,7 +58,11 @@ public class SearchFragment extends Fragment {
 
     TextView xpText;
 
+    CardView rewardCard;
 
+    LottieAnimationView confettiAnimation;
+
+    Animation animation;
 
     private final List<Book> books = new ArrayList<>();
 
@@ -76,7 +86,10 @@ public class SearchFragment extends Fragment {
 
     private void initializeViews(View view) {
         recyclerView = view.findViewById(R.id.bookRecyclerView);
+        rewardCard = view.findViewById(R.id.rewardCard);
         searchEditText = view.findViewById(R.id.findNewBook);
+        confettiAnimation = view.findViewById(R.id.confettiAnimation);
+        animation = new Animation(view);
         xpText = view.findViewById(R.id.xpText);
         Button account_button = view.findViewById(R.id.account_button);
         account_button.setOnClickListener(v -> navigateToAccountActivity());
@@ -94,23 +107,43 @@ public class SearchFragment extends Fragment {
     }
 
     private void addBookToUserLibrary(Book book) {
-
         bookLibraryManager.addBookToUserLibrary(book, new AddBookCallback() {
             @Override
             public void onSuccess() {
-                //showToast("Книгу додано до бібліотеки");
+                requireActivity().runOnUiThread(() -> {
+                    // Показуємо текст XP
+                    xpText.setVisibility(View.VISIBLE);
+                    xpText.setAlpha(0f);
+                    xpText.setScaleX(0.5f);
+                    xpText.setScaleY(0.5f);
+                    xpText.setTranslationY(100f);
 
-                xpText.setVisibility(View.VISIBLE);
-                xpText.setAlpha(0f);
-                xpText.setTranslationY(100f);
-                xpText.setText("+50 XP");
+                    xpText.animate()
+                            .alpha(1f)
+                            .scaleX(1f)
+                            .scaleY(1f)
+                            .translationY(0f)
+                            .setDuration(600)
+                            .setInterpolator(new OvershootInterpolator())
+                            .start();
 
-                xpText.animate()
-                        .alpha(1f)
-                        .translationYBy(-100f)
-                        .setDuration(800)
-                        .withEndAction(() -> xpText.setVisibility(View.GONE))
-                        .start();
+                    // Затримка перед показом картки
+                    new Handler().postDelayed(() -> {
+                        animation.showRewardWithAutoHide(rewardCard, confettiAnimation, 3000);
+                    }, 300);
+
+                    // Сховати текст XP через 3 секунди
+                    new Handler().postDelayed(() -> {
+                        xpText.animate()
+                                .alpha(0f)
+                                .scaleX(0.5f)
+                                .scaleY(0.5f)
+                                .translationY(-100f)
+                                .setDuration(400)
+                                .withEndAction(() -> xpText.setVisibility(View.GONE))
+                                .start();
+                    }, 3300); // 300 + 3000
+                });
             }
 
             @Override

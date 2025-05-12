@@ -55,6 +55,7 @@ dependencies {
     implementation("com.google.android.gms:play-services-basement:18.2.0")
     implementation("com.google.android.material:material:1.11.0")
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
+    implementation (libs.lottie)
 
     testImplementation(libs.junit)
     testImplementation("org.mockito:mockito-core:5.11.0")
@@ -71,7 +72,6 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
     annotationProcessor("com.github.bumptech.glide:compiler:4.12.0")
 }
-
 /*
 tasks.withType<JavaCompile>().configureEach {
     options.compilerArgs.add("-Xlint:deprecation")
