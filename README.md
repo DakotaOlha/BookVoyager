@@ -2,12 +2,17 @@
 
 Abbreviations for countries:
 
-"AL": "Albania", 
-"AT": "Austria", 
-"BE": "Belgium", 
-"BG": "Bulgaria", 
-"BA": "Bosnia and Herz.", 
-"BY": "Belarus", 
+"AL": "Albania"
+
+"AT": "Austria"
+
+"BE": "Belgium"
+
+"BG": "Bulgaria"
+
+"BA": "Bosnia and Herz."
+"BY": "Belarus"
+
 "CH": "Switzerland", 
 "CZ": "Czech Rep.", 
 "DE": "Germany", 
