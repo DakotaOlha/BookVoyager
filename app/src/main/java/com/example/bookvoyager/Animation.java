@@ -60,6 +60,8 @@ public class Animation {
     }
 
     public void showRewardWithAutoHide(CardView rewardCard, LottieAnimationView confettiAnimation, long delayMillis) {
+        if(rewardCard==null || confettiAnimation == null)
+            return;
         showReward(rewardCard, confettiAnimation, () -> {
             handler.postDelayed(() -> {
                 hideReward(rewardCard, confettiAnimation, null);

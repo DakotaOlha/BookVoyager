@@ -188,9 +188,6 @@ public class MyBooksFragment extends Fragment {
 
         switch (currentFilter) {
             case "Is read":
-                newFilter = "In process";
-                break;
-            case "In process":
                 newFilter = "Not read";
                 break;
             case "Not read":
@@ -227,17 +224,18 @@ public class MyBooksFragment extends Fragment {
     }
 
     private void filterBooksByReadingStatus(String filter){
-//        if(filter.equals("Read?")){
-//            bookAdapter.FilterList(books);
-//            return;
-//        }
-//        List<Book> filteredBooks = new ArrayList<>();
-//        for (Book bk: books){
-//            if(bk.getProgressReading().equals(filter)){
-//                filteredBooks.add(bk);
-//            }
-//        }
-//        bookAdapter.FilterList(filteredBooks);
+        if(filter.equals("Read?")){
+            bookAdapter.FilterList(books);
+            return;
+        }
+        boolean k = (filter.equals("Not read"))? false : true;
+        List<Book> filteredBooks = new ArrayList<>();
+        for (Book bk: books){
+            if(bk.getStatus().equals(k)){
+                filteredBooks.add(bk);
+            }
+        }
+        bookAdapter.FilterList(filteredBooks);
     }
 
     public void loadUserBooks(){
@@ -269,6 +267,12 @@ public class MyBooksFragment extends Fragment {
         b.setPageCount(Math.toIntExact(document.getLong("pageCount")));
         b.setCountry(document.getString("country"));
         b.setDescription(document.getString("description"));
+        Boolean status = document.getBoolean("status");
+        if (status != null) {
+            b.setStatus(status);
+        } else {
+            b.setStatus(false);
+        }
         return b;
     }
 

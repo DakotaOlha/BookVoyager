@@ -1,5 +1,6 @@
 package com.example.bookvoyager.Fragment;
 
+
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
@@ -67,6 +68,8 @@ public class BookTimerFragment extends Fragment {
     private TextView timerTextView;
     private ImageView bookCoverImageView;
     private TableLayout tableLayout;
+    private TextView tvBookPercent;
+
     public static BookTimerFragment newInstance(String title, String coverUrl) {
         BookTimerFragment fragment = new BookTimerFragment();
         Bundle args = new Bundle();
@@ -99,6 +102,7 @@ public class BookTimerFragment extends Fragment {
 
         bookCoverImageView = view.findViewById(R.id.tvBookCover);
         tableLayout = view.findViewById(R.id.statsTable);
+        tvBookPercent = view.findViewById(R.id.tvBookPercent);
 
         TextView tvTitle = view.findViewById(R.id.tvBookTitle);
 
@@ -175,6 +179,11 @@ public class BookTimerFragment extends Fragment {
                     addStatsRow(tableLayout, ss.getDate(), timeFormatted);
                     addStatsRow(tableLayout, ss.getPercent() + "%",  ss.getCurrentPage() + " pages");
                     addStatsRow(tableLayout, "",  "");
+
+
+                    if(ss.getPercent() >= 100){
+                        playButton.setEnabled(false);
+                    }
                 }
             }
         });
@@ -299,6 +308,8 @@ public class BookTimerFragment extends Fragment {
                 String date = df.format(dateNow);
                 SessionsManager sm = new SessionsManager(currentSessionId);
                 sm.saveReadingProgress(readingSessions, currentPage, elapsedTime/1000, date);
+                int pars = ((readingSessions.getPagesRead()*100)/readingSessions.getPagesCount());
+                tvBookPercent.setText(pars + "%");
                 LoadData();
             }
             elapsedTime = 0;

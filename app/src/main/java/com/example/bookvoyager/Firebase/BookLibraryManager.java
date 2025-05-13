@@ -128,6 +128,35 @@ public class BookLibraryManager extends FirebaseService {
                     getDb().collection("users")
                             .document(currentUserId)
                             .update("booksAdded", FieldValue.increment(1));
+                    stats.setBooksRead(stats.getBooksRead()+1);
+                    stats.setBooksAdded(stats.getBooksAdded()+1);
+                    stats.addCountry(book.getCountry());
+
+                    getDb().collection("users")
+                            .document(currentUserId)
+                            .update("booksAdded", FieldValue.increment(1));
+
+                    RewardManager rewardManager = new RewardManager(currentUserId, reward -> {
+                        if (rewardDescription != null) {
+                            ((Activity)context).runOnUiThread(() -> {
+                                rewardDescription.setText(reward.getName());
+                            });
+                        }
+                        //animation.showRewardWithAutoHide(rewardCard, confettiAnimation, 3000);
+                        //Toast.makeText(context, "Отримано винагороду: " + reward.getName(), Toast.LENGTH_LONG).show();
+                        xpManager.addXpToUser(20, new AddBookCallback() {
+                            @Override
+                            public void onSuccess() {
+
+                            }
+
+                            @Override
+                            public void onFailure(String errorMessage) {
+
+                            }
+                        });
+                    });
+                    rewardManager.checkAndAssignRewards(stats);
                     callback.onSuccess();
                 })
                 .addOnFailureListener(e ->
@@ -147,6 +176,28 @@ public class BookLibraryManager extends FirebaseService {
                 .document(documentId)
                 .update(bookData)
                 .addOnSuccessListener(unused -> {
+                    stats.addCountry(book.getCountry());
+                    RewardManager rewardManager = new RewardManager(currentUserId, reward -> {
+                        if (rewardDescription != null) {
+                            ((Activity)context).runOnUiThread(() -> {
+                                rewardDescription.setText(reward.getName());
+                            });
+                        }
+                        animation.showRewardWithAutoHide(rewardCard, confettiAnimation, 3000);
+                        //Toast.makeText(context, "Отримано винагороду: " + reward.getName(), Toast.LENGTH_LONG).show();
+                        xpManager.addXpToUser(20, new AddBookCallback() {
+                            @Override
+                            public void onSuccess() {
+
+                            }
+
+                            @Override
+                            public void onFailure(String errorMessage) {
+
+                            }
+                        });
+                    });
+                    rewardManager.checkAndAssignRewards(stats);
                     callback.onSuccess();
                 })
                 .addOnFailureListener(e -> {
@@ -341,6 +392,16 @@ public class BookLibraryManager extends FirebaseService {
                         stats.setCountriesOpened(countriesOpened != null ? countriesOpened.intValue() : 0);
                     }
                     onComplete.run();
+                });
+
+        getDb().collection("users")
+                .document(userId)
+                .collection("locationSpot")
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    for(QueryDocumentSnapshot d : documentSnapshot){
+                        stats.setCountry(d.getString("locationId"), d.getLong("countRequiredBooks"));
+                    }
                 });
     }
 

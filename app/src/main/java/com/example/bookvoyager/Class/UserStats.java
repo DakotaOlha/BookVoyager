@@ -31,6 +31,10 @@ public class UserStats {
         }
     }
 
+    public void setCountry(String name, long count){
+        booksByCountry.put(name, (int)count);
+    }
+
     public int getBooksAdded() {
         return booksAdded;
     }

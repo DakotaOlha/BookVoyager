@@ -8,6 +8,7 @@ public class Book {
     private String coverUrl;
     private String description;
     private String country;
+    private Boolean status;
 
     public Book(){
         this.ISBN = "";
@@ -16,6 +17,7 @@ public class Book {
         this.pageCount = 0;
         this.description = "";
         this.country = "";
+        this.status = false;
     }
 
     public Book (String title,  String authors){
@@ -27,6 +29,14 @@ public class Book {
         this.title = title;
         this.authors = authors;
         this.coverUrl = coverUrl;
+    }
+
+    public Boolean getStatus() {
+        return status;
+    }
+
+    public void setStatus(Boolean status) {
+        this.status = status;
     }
 
     public Book(String ISBN, String title, String authors, String coverUrl) {

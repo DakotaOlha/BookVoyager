@@ -97,7 +97,7 @@ public class EditBookDialogFragment extends DialogFragment {
         String newDescription = editDescription.getText().toString().trim();
 
         if (TextUtils.isEmpty(newTitle) || TextUtils.isEmpty(newAuthor)) {
-            Toast.makeText(getContext(), "Заповніть обов'язкові поля", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Fill in the required fields", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -106,7 +106,7 @@ public class EditBookDialogFragment extends DialogFragment {
             try {
                 newPages = Integer.parseInt(newPagesStr);
             } catch (NumberFormatException e) {
-                Toast.makeText(getContext(), "Невірний формат кількості сторінок", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Invalid page count format", Toast.LENGTH_SHORT).show();
                 return;
             }
         }
@@ -162,7 +162,7 @@ public class EditBookDialogFragment extends DialogFragment {
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Оберіть обкладинку"), PICK_IMAGE_REQUEST);
+        startActivityForResult(Intent.createChooser(intent, "Choose a cover"), PICK_IMAGE_REQUEST);
     }
 
     @Override
@@ -205,7 +205,7 @@ public class EditBookDialogFragment extends DialogFragment {
                 }
             });
         }).addOnFailureListener(e -> {
-            Toast.makeText(getContext(), "Помилка при завантаженні зображення", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Error uploading an image", Toast.LENGTH_SHORT).show();
         });
     }
 
@@ -219,14 +219,14 @@ public class EditBookDialogFragment extends DialogFragment {
         bookLibraryManager.updateBookInFirestore(book, lastCountry, documentId, new AddBookCallback() {
             @Override
             public void onSuccess() {
-                Toast.makeText(getContext(), "Книгу оновлено", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "The book has been updated", Toast.LENGTH_SHORT).show();
                 listener.onBookUpdated();
                 dismiss();
             }
 
             @Override
             public void onFailure(String errorMessage) {
-                Toast.makeText(getContext(), "Помилка при оновленні", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Error during update", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -242,14 +242,14 @@ public class EditBookDialogFragment extends DialogFragment {
         bookLibraryManager.saveNewBookToFirestore(book, new AddBookCallback() {
             @Override
             public void onSuccess() {
-                Toast.makeText(getContext(), "Книгу додано", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "The book has been added", Toast.LENGTH_SHORT).show();
                 listener.onBookUpdated();
                 dismiss();
             }
 
             @Override
             public void onFailure(String errorMessage) {
-                Toast.makeText(getContext(), "Помилка при додаванні", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Error adding", Toast.LENGTH_SHORT).show();
             }
         });
     }

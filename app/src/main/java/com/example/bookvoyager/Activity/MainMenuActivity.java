@@ -89,6 +89,7 @@ public class MainMenuActivity extends AppCompatActivity {
         popupWindow.setAnimationStyle(R.style.PopupSlideUpAnimation);
 
         popupView.findViewById(R.id.add_by_isbn).setOnClickListener(v -> {
+
             replaceFragment(new SearchFragment());
             popupWindow.dismiss();
         });
