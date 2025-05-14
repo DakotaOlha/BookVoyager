@@ -109,6 +109,7 @@ public class MainMenuActivity extends AppCompatActivity {
         });
         popupView.findViewById(R.id.add_by_photo).setOnClickListener(v -> {
             startActivity(new Intent(this, ScanISBNActivity.class));
+            
             popupWindow.dismiss();
         });
 
