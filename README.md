@@ -9,4 +9,5 @@ Book Voyager is an Android app that helps users track their reading activity thr
 
 ## ❗Explore an interactive map based on author countries (EU region abbreviations included)
 
-### [Download APK](https://drive.google.com/drive/folders/1Kx9_U6e1GH1Kb8LWH1USFVcje9j_ZZnT?usp=sharing)
+### [Download APK](https://github.com/DakotaOlha/BookVoyager/releases/tag/release)
+// ### [Download APK](https://drive.google.com/drive/folders/1Kx9_U6e1GH1Kb8LWH1USFVcje9j_ZZnT?usp=sharing)
