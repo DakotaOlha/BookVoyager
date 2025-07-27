@@ -1,42 +1,12 @@
-[Download APK](https://drive.google.com/drive/folders/1Kx9_U6e1GH1Kb8LWH1USFVcje9j_ZZnT?usp=sharing)
+# 📖 Book Voyager — Android Reading Tracker with Gamification
+Book Voyager is an Android app that helps users track their reading activity through a fun and engaging experience. The app combines a personal library manager, reading timer, achievement system, and an interactive world map showing the origin countries of book authors.
 
-Abbreviations for countries:  
-"AL": "Albania",   
-"AT": "Austria",   
-"BE": "Belgium",  
-"BG": "Bulgaria",   
-"BA": "Bosnia and Herz.",  
-"BY": "Belarus",  
-"CH": "Switzerland", 
-"CZ": "Czech Rep.",  
-"DE": "Germany",  
-"DK": "Denmark",   
-"EE": "Estonia",   
-"FI": "Finland",   
-"GB": "United Kingdom",   
-"GR": "Greece",   
-"HR": "Croatia",   
-"HU": "Hungary",   
-"IE": "Ireland",   
-"IS": "Iceland",    
-"IT": "Italy",    
-"LT": "Lithuania",    
-"LU": "Luxembourg",    
-"LV": "Latvia",    
-"MD": "Moldova",    
-"MK": "Macedonia",    
-"ME": "Montenegro",    
-"NL": "Netherlands",    
-"NO": "Norway",   
-"PL": "Poland",    
-"PT": "Portugal",    
-"RO": "Romania",    
-"RS": "Serbia",    
-"SK": "Slovakia",    
-"SI": "Slovenia",    
-"SE": "Sweden",    
-"UA": "Ukraine",    
-"FI": "Finland",    
-"FR": "France",    
-"ES": "Spain",   
-"KO": "Kosovo"   
+## Key features:
+
+- Add and manage your book collection
+- Track reading time with a built-in timer
+- Earn badges and rewards for reading progress
+
+###❗Explore an interactive map based on author countries (EU region abbreviations included)
+
+## [Download APK](https://drive.google.com/drive/folders/1Kx9_U6e1GH1Kb8LWH1USFVcje9j_ZZnT?usp=sharing)
