@@ -7,6 +7,6 @@ Book Voyager is an Android app that helps users track their reading activity thr
 - Track reading time with a built-in timer
 - Earn badges and rewards for reading progress
 
-###❗Explore an interactive map based on author countries (EU region abbreviations included)
+### ❗Explore an interactive map based on author countries (EU region abbreviations included)
 
 ## [Download APK](https://drive.google.com/drive/folders/1Kx9_U6e1GH1Kb8LWH1USFVcje9j_ZZnT?usp=sharing)
